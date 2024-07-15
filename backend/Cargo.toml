@@ -1,11 +1,17 @@
 [package]
-name = "todo-project"
+name = "pump"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-cors = "0.7.0"
+actix-web = "4.8.0"
 colored = "2.1.0"
 directories = "5.0.1"
+env_logger = "0.11.3"
+log = "0.4.22"
+rusqlite = "0.31.0"
+serde = "1.0.204"
 tauri = "1.6.8"
