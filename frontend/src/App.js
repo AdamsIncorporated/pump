@@ -1,13 +1,13 @@
-import './App.css';
-import Form from './component/form.js';
-import Header from './component/Header.js';
+import "./App.css";
+import Header from "./component/Header.js";
+import Lift from "./component/Lift.js";
 
 function App() {
   return (
     <div className="App">
       <Header />
-      <div className="flex flex-row items-end justify-start m-5 text-white">
-        <Form />
+      <div className="App-body">
+        <Lift />
       </div>
     </div>
   );
