@@ -14,24 +14,24 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn new(db_file: &str) -> Result<Database> {
-        let conn = Connection::open(db_file)?;
+    pub fn new() -> Result<Database> {
+        let conn = Connection::open("main.db")?;
         Ok(Database { conn })
     }
 
     // Methods for handling Lift
     pub fn insert_lift(&self, lift: &Lift) -> Result<usize> {
         self.conn.execute(
-            "INSERT INTO lifts (lift, pounds) VALUES (?1, ?2, ?3)",
+            "INSERT INTO Lift (Lift, Pounds) VALUES (?1, ?2, ?3)",
             params![lift.lift, lift.pounds],
         )
     }
 
-    pub fn get_lift(&self, id: i32) -> Result<Option<Lift>> {
+    pub fn get_lift(&self, lift: &Lift) -> Result<Option<Lift>> {
         let mut stmt = self
             .conn
-            .prepare("SELECT id, lift, pounds, create_date FROM lifts WHERE id = ?1")?;
-        let lift_iter = stmt.query_map(params![id], |row| {
+            .prepare("SELECT * FROM Lift WHERE Lift = ?1")?;
+        let lift_iter = stmt.query_map(params![lift.lift], |row| {
             Ok(Lift {
                 id: row.get(0)?,
                 lift: row.get(1)?,
