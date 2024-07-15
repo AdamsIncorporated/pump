@@ -1,11 +1,12 @@
 import './App.css';
 import Form from './component/form.js';
+import Header from './component/Header.js';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header"></header>
-      <div className="App-body">
+      <Header />
+      <div className="flex flex-row items-end justify-start m-5 text-white">
         <Form />
       </div>
     </div>
