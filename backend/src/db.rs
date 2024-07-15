@@ -1,62 +1,55 @@
 use rusqlite::{params, Connection, Result};
+use serde::Deserialize;
 
-#[derive(Debug)]
-struct Person {
-    id: i32,
-    name: String,
-    data: Vec<u8>,
+#[derive(Debug, Deserialize)]
+pub struct Lift {
+    id: Option<i32>,
+    lift: String,
+    pounds: i32,
+    create_date: Option<String>,
 }
 
-struct Database {
+pub struct Database {
     conn: Connection,
 }
 
 impl Database {
-    fn new(db_file: &str) -> Result<Database> {
+    pub fn new(db_file: &str) -> Result<Database> {
         let conn = Connection::open(db_file)?;
         Ok(Database { conn })
     }
 
-    fn create_table(&self) -> Result<()> {
+    // Methods for handling Lift
+    pub fn insert_lift(&self, lift: &Lift) -> Result<usize> {
         self.conn.execute(
-            "CREATE TABLE IF NOT EXISTS person (
-                  id    INTEGER PRIMARY KEY,
-                  name  TEXT NOT NULL,
-                  data  BLOB
-                  )",
-            [],
-        )?;
-        Ok(())
-    }
-
-    fn insert_person(&self, name: &str, data: &[u8]) -> Result<usize> {
-        self.conn.execute(
-            "INSERT INTO person (name, data) VALUES (?1, ?2)",
-            params![name, data],
+            "INSERT INTO lifts (lift, pounds) VALUES (?1, ?2, ?3)",
+            params![lift.lift, lift.pounds],
         )
     }
 
-    fn update_person(&self, id: i32, name: &str, data: &[u8]) -> Result<usize> {
-        self.conn.execute(
-            "UPDATE person SET name = ?1, data = ?2 WHERE id = ?3",
-            params![name, data, id],
-        )
-    }
-
-    fn delete_person(&self, id: i32) -> Result<usize> {
-        self.conn.execute("DELETE FROM person WHERE id = ?1", params![id])
-    }
-
-    fn get_person(&self, id: i32) -> Result<Option<Person>> {
-        let mut stmt = self.conn.prepare("SELECT id, name, data FROM person WHERE id = ?1")?;
-        let mut person_iter = stmt.query_map(params![id], |row| {
-            Ok(Person {
+    pub fn get_lift(&self, id: i32) -> Result<Option<Lift>> {
+        let mut stmt = self
+            .conn
+            .prepare("SELECT id, lift, pounds, create_date FROM lifts WHERE id = ?1")?;
+        let lift_iter = stmt.query_map(params![id], |row| {
+            Ok(Lift {
                 id: row.get(0)?,
-                name: row.get(1)?,
-                data: row.get(2)?,
+                lift: row.get(1)?,
+                pounds: row.get(2)?,
+                create_date: row.get(3)?,
             })
         })?;
 
-        if let Some(person) = person_iter.next() {
-            person
- 
+        // Collect the results and return the first found lift or None
+        for lift in lift_iter {
+            return Ok(Some(lift?));
+        }
+
+        Ok(None)
+    }
+
+    pub fn delete_lift(&self, id: i32) -> Result<usize> {
+        self.conn
+            .execute("DELETE FROM lifts WHERE id = ?1", params![id])
+    }
+}
