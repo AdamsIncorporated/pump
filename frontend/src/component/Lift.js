@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart } from '@mui/x-charts/LineChart';
+import LiftForm from './LiftForm'
 
 const Lift = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -31,27 +31,16 @@ const Lift = () => {
           return (
             <button
               key={actualIndex}
-              className={`transition-opacity transition-transform duration-500 ease-in-out transform ${
-                activeIndex !== null && activeIndex !== actualIndex ? 'opacity-0 pointer-events-none' : 'opacity-100'
-              } hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
+              className={`transition-opacity transition-transform duration-500 ease-in-out transform ${activeIndex !== null && activeIndex !== actualIndex ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
+                } hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
               onClick={() => handleClick(actualIndex)}
             >
               {exercise}
             </button>
           );
         })}
+        {activeIndex !== null && <LiftForm />}
       </div>
-      {/* <LineChart
-        xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-        series={[
-          {
-            data: [2, 5.5, 2, 8.5, 1.5, 5],
-            area: true,
-          },
-        ]}
-        width={500}
-        height={300}
-      /> */}
     </div>
   );
 };
