@@ -1,10 +1,15 @@
 use rusqlite::{params, Connection, Result};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Lifts {
+    lifts: Option<Vec<Lift>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Lift {
     id: Option<i32>,
-    lift: String,
+    exercise: String,
     pounds: i32,
     create_date: Option<String>,
 }
@@ -20,36 +25,36 @@ impl Database {
     }
 
     // Methods for handling Lift
-    pub fn insert_lift(&self, lift: &Lift) -> Result<usize> {
+    pub fn create(&self, lift: &Lift) -> Result<usize> {
         self.conn.execute(
-            "INSERT INTO Lift (Lift, Pounds) VALUES (?1, ?2, ?3)",
-            params![lift.lift, lift.pounds],
+            "INSERT INTO Lift (Exercise, Pounds) VALUES (?1, ?2)",
+            params![lift.exercise, lift.pounds],
         )
     }
 
-    pub fn get_lift(&self, lift: &Lift) -> Result<Option<Lift>> {
-        let mut stmt = self
-            .conn
-            .prepare("SELECT * FROM Lift WHERE Lift = ?1")?;
-        let lift_iter = stmt.query_map(params![lift.lift], |row| {
+    pub fn read(&self, lift: &Lift) -> Result<Lifts> {
+        let mut stmt = self.conn.prepare("SELECT * FROM Lift WHERE Lift = ?1")?;
+        let lift_iter = stmt.query_map(params![lift.exercise], |row| {
             Ok(Lift {
                 id: row.get(0)?,
-                lift: row.get(1)?,
+                exercise: row.get(1)?,
                 pounds: row.get(2)?,
                 create_date: row.get(3)?,
             })
         })?;
 
-        // Collect the results and return the first found lift or None
+        let mut lifts = Vec::new();
         for lift in lift_iter {
-            return Ok(Some(lift?));
+            lifts.push(lift?);
         }
 
-        Ok(None)
+        Ok(Lifts {
+            lifts: if lifts.is_empty() { None } else { Some(lifts) },
+        })
     }
 
     pub fn delete_lift(&self, id: i32) -> Result<usize> {
         self.conn
-            .execute("DELETE FROM lifts WHERE id = ?1", params![id])
+            .execute("DELETE FROM Lift WHERE Id = ?1", params![id])
     }
 }

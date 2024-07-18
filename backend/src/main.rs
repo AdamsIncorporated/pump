@@ -16,7 +16,7 @@ async fn create(query: web::Query<Lift>) -> impl Responder {
     };
 
     // Insert a lift into the db
-    match db.insert_lift(&query) {
+    match db.create(&query) {
         Ok(_) => HttpResponse::Ok().body("Lift successfully inserted into the database."),
         Err(err) => {
             error!("Failed to insert a lift into the database: {}", err);
@@ -36,8 +36,8 @@ async fn read(query: web::Query<Lift>) -> impl Responder {
     };
 
     // Insert a lift into the db
-    match db.get_lift(&query) {
-        Ok(_) => HttpResponse::Ok().body("Lift rows successfully pulled."),
+    match db.read(&query) {
+        Ok(response) => HttpResponse::Ok().json(response),
         Err(err) => {
             error!("Failed to pull lift rows from the database: {}", err);
             return HttpResponse::InternalServerError().body("Failed to pull lift rows.");

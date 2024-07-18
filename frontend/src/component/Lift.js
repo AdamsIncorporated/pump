@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 const Lift = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
   const exercises = [
     'Squats',
     'Deadlift',
@@ -14,14 +15,33 @@ const Lift = () => {
     'T-bar Row',
   ];
 
+  const handleClick = (index) => {
+    setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+
+  const sortedExercises = activeIndex !== null
+    ? [exercises[activeIndex], ...exercises.filter((_, index) => index !== activeIndex)]
+    : exercises;
+
   return (
     <div>
       <div className="grid grid-cols-3 gap-8 text-white text-2xl underline font-semibold">
-        {exercises.map((exercise, index) => (
-          <button className='transition-all duration-300 ease-in-out transform hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500' key={index}>{exercise}</button>
-        ))}
+        {sortedExercises.map((exercise, index) => {
+          const actualIndex = activeIndex !== null ? (index === 0 ? activeIndex : exercises.findIndex(e => e === exercise)) : index;
+          return (
+            <button
+              key={actualIndex}
+              className={`transition-opacity transition-transform duration-500 ease-in-out transform ${
+                activeIndex !== null && activeIndex !== actualIndex ? 'opacity-0 pointer-events-none' : 'opacity-100'
+              } hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
+              onClick={() => handleClick(actualIndex)}
+            >
+              {exercise}
+            </button>
+          );
+        })}
       </div>
-      <LineChart
+      {/* <LineChart
         xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
         series={[
           {
@@ -31,7 +51,7 @@ const Lift = () => {
         ]}
         width={500}
         height={300}
-      />
+      /> */}
     </div>
   );
 };
