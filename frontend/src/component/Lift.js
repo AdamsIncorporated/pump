@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import LiftForm from './LiftForm'
+import React, { useState, useEffect } from 'react';
+import LiftForm from './LiftForm';
+import Table from './Table';
 
 const Lift = () => {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [activeSection, setActiveSection] = useState(null);
+
   const exercises = [
-    'Squats',
+    'Squat',
     'Deadlift',
     'Bench Press',
     'Dumbell Press',
@@ -19,27 +22,42 @@ const Lift = () => {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const sortedExercises = activeIndex !== null
-    ? [exercises[activeIndex], ...exercises.filter((_, index) => index !== activeIndex)]
-    : exercises;
+  const shouldHideButtons = activeIndex !== null;
+
+  useEffect(() => {
+    if (activeIndex !== null) {
+      setActiveSection(exercises[activeIndex]);
+    } else {
+      setActiveSection(null);
+    }
+  }, [activeIndex, exercises]);
 
   return (
-    <div>
+    <div className='m-10'>
       <div className="grid grid-cols-3 gap-8 text-white text-2xl underline font-semibold">
-        {sortedExercises.map((exercise, index) => {
-          const actualIndex = activeIndex !== null ? (index === 0 ? activeIndex : exercises.findIndex(e => e === exercise)) : index;
+        {exercises.map((exercise, index) => {
+          const actualIndex = index;
+
+          const buttonClassName = shouldHideButtons ? 'hidden' : 'opacity-100';
+
           return (
             <button
               key={actualIndex}
-              className={`transition-opacity transition-transform duration-500 ease-in-out transform ${activeIndex !== null && activeIndex !== actualIndex ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
-                } hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
+              className={`my-10 transition-opacity transition-transform duration-500 ease-in-out transform ${buttonClassName} hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
               onClick={() => handleClick(actualIndex)}
             >
               {exercise}
             </button>
           );
         })}
-        {activeIndex !== null && <LiftForm />}
+      </div>
+      <div>
+        {activeIndex !== null && (
+          <>
+            <LiftForm activeSection={activeSection} />
+            <Table />
+          </>
+        )}
       </div>
     </div>
   );
