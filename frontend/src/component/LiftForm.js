@@ -1,25 +1,49 @@
 import React, { useState } from 'react';
 
-const NumberForm = ({activeSection}) => {
+const NumberForm = ({ activeSection }) => {
   const [value, setValue] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (value < 0 || value > 1000) {
-      alert('Please enter a number between 0 and 1000.');
+
+    const numericValue = parseFloat(value);
+
+    if (numericValue > 0 && numericValue < 1000) {
+      try {
+        const response = await fetch("api/create", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            exercise: activeSection,
+            pounds: numericValue 
+          }),
+        });
+
+        const result = await response.json();
+        console.log(result);
+
+        // Clear the input field after successful submission
+        setValue('');
+
+      } catch (error) {
+        console.error("Error inserting data:", error);
+      }
     } else {
-      alert(`Form submitted successfully! ${activeSection}`);
-      // Perform form submission logic here
+      alert('Please enter a value between 0 and 1000.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className='mb-10 animate-text bg-gradient-to-r from-teal-500 via-orange-600 to-orange-500 bg-clip-text text-transparent text-7xl font-black'>{activeSection}</h1>
+      <h1 className='mb-10 animate-text bg-gradient-to-r from-teal-500 via-orange-600 to-orange-500 bg-clip-text text-transparent text-7xl font-black'>
+        {activeSection}
+      </h1>
       <div className="flex flex-row gap-5">
         <div className="relative">
           <input
-            type="text"
+            type="number" // Changed to number for better validation
             min="0"
             max="1000"
             id="pounds"

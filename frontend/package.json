@@ -11,9 +11,9 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "flowbite-react": "^0.10.1",
+    "http-proxy-middleware": "^3.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-hook-form": "^7.52.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -46,5 +46,5 @@
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.5"
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "http://127.0.0.1:8000/"
 }

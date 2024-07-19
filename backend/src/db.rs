@@ -33,7 +33,9 @@ impl Database {
     }
 
     pub fn read(&self, lift: &Lift) -> Result<Lifts> {
-        let mut stmt = self.conn.prepare("SELECT * FROM Lift WHERE Lift = ?1")?;
+        let mut stmt = self
+            .conn
+            .prepare("SELECT * FROM Lift WHERE Exercise = ?1")?;
         let lift_iter = stmt.query_map(params![lift.exercise], |row| {
             Ok(Lift {
                 id: row.get(0)?,
@@ -53,8 +55,8 @@ impl Database {
         })
     }
 
-    pub fn delete_lift(&self, id: i32) -> Result<usize> {
+    pub fn delete(&self, lift: &Lift) -> Result<usize> {
         self.conn
-            .execute("DELETE FROM Lift WHERE Id = ?1", params![id])
+            .execute("DELETE FROM Lift WHERE Id = ?1", params![lift.id])
     }
 }

@@ -55,7 +55,7 @@ const Lift = () => {
         {activeIndex !== null && (
           <>
             <LiftForm activeSection={activeSection} />
-            <Table />
+            <Table activeSection={activeSection} />
           </>
         )}
       </div>
