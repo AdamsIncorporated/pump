@@ -7,9 +7,9 @@ const Table = ({ activeSection }) => {
         if (activeSection !== null) {
             const fetchData = async () => {
                 try {
-                    const url = new URL('/api/read', window.location.origin);
+                    const url = new URL('/api/read/', window.location.origin);
                     url.searchParams.append('exercise', activeSection);
-                    
+
                     const response = await fetch(url);
                     const result = await response.json();
                     setData(result);

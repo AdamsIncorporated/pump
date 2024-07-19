@@ -5,6 +5,12 @@ mod db;
 use actix_web::middleware::Logger;
 use db::{Database, Lift};
 use log::error;
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct ResponseMessage {
+    message: String,
+}
 
 #[post("/create")]
 async fn create(lift: web::Json<Lift>) -> impl Responder {
@@ -12,16 +18,21 @@ async fn create(lift: web::Json<Lift>) -> impl Responder {
         Ok(db) => db,
         Err(err) => {
             error!("Failed to find the main.db file for the database!: {}", err);
-            return HttpResponse::InternalServerError().body("Failed to find database.");
+            return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
 
     // Insert a lift into the db
     match db.create(&lift) {
-        Ok(_) => HttpResponse::Ok().body("Lift successfully inserted into the database."),
+        Ok(_) => {
+            let response = ResponseMessage {
+                message: "Lift successfully inserted into the database.".into()
+            };
+            HttpResponse::Ok().json(response)
+        }
         Err(err) => {
             error!("Failed to insert a lift into the database: {}", err);
-            return HttpResponse::InternalServerError().body("Failed to insert lift.");
+            return HttpResponse::InternalServerError().json("Failed to insert lift.");
         }
     }
 }
