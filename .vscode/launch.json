@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Pump",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["build", "--package=pump", "--bin=pump"],
+        "filter": {
+          "name": "pump",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}/backend/"
+    }
+  ]
+}

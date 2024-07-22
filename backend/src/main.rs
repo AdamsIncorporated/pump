@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use env_logger::Env;
 mod cors;
 mod db;
@@ -37,8 +37,8 @@ async fn create(lift: web::Json<Lift>) -> impl Responder {
     }
 }
 
-#[get("/read")]
-async fn read(lift: web::Query<Lift>) -> impl Responder {
+#[post("/read")]
+async fn read(lift: web::Json<Lift>) -> impl Responder {
     let db = match Database::new() {
         Ok(db) => db,
         Err(err) => {
@@ -47,7 +47,7 @@ async fn read(lift: web::Query<Lift>) -> impl Responder {
         }
     };
 
-    // Insert a lift into the db
+    // Retrieve a lift from the db
     match db.read(&lift) {
         Ok(response) => HttpResponse::Ok().json(response),
         Err(err) => {
@@ -57,7 +57,7 @@ async fn read(lift: web::Query<Lift>) -> impl Responder {
     }
 }
 
-#[get("/delete")]
+#[post("/delete")]
 async fn delete(query: web::Query<Lift>) -> impl Responder {
     let db = match Database::new() {
         Ok(db) => db,

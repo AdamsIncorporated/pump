@@ -9,8 +9,8 @@ pub struct Lifts {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Lift {
     id: Option<i32>,
-    exercise: String,
-    pounds: i32,
+    exercise: Option<String>,
+    pounds: Option<i32>,
     create_date: Option<String>,
 }
 

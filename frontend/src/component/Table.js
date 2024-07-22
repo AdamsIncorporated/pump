@@ -7,12 +7,17 @@ const Table = ({ activeSection }) => {
         if (activeSection !== null) {
             const fetchData = async () => {
                 try {
-                    const url = new URL('/api/read/', window.location.origin);
-                    url.searchParams.append('exercise', activeSection);
-
-                    const response = await fetch(url);
+                    const response = await fetch("/api/read", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            exercise: activeSection,
+                        }),
+                    });
                     const result = await response.json();
-                    setData(result);
+                    setData(result.lifts);
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 }
@@ -24,27 +29,35 @@ const Table = ({ activeSection }) => {
         }
     }, [activeSection]);
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString.replace(" ", "T"));
+        const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = date.toLocaleDateString('en-US', optionsDate);
+
+        return formattedDate;
+    };
+
     return (
-        <div className="relative overflow-auto mt-10 w-1/2">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead className="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+        <div className="relative mt-10 w-1/2">
+            <table className="overflow-auto w-full text-sm text-gray-500 dark:text-gray-400">
+                <thead className="text-left text-xs text-gray-400 uppercase dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">
-                            Pounds
+                            Create Date
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Create Date
+                            Pounds
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {data.map((item, index) => (
                         <tr key={index} className="border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {item.pounds}
-                            </th>
                             <td className="px-6 py-4">
-                                {item.createDate}
+                                {formatDate(item.create_date)}
+                            </td>
+                            <td className="px-6 py-4 font-medium text-center text-white whitespace-nowrap dark:text-white">
+                                {item.pounds}
                             </td>
                         </tr>
                     ))}

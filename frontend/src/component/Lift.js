@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import LiftForm from './LiftForm';
 import Table from './Table';
 
 const Lift = () => {
   const [activeIndex, setActiveIndex] = useState(null);
-  const [activeSection, setActiveSection] = useState(null);
 
   const exercises = [
     'Squat',
@@ -23,28 +22,19 @@ const Lift = () => {
   };
 
   const shouldHideButtons = activeIndex !== null;
-
-  useEffect(() => {
-    if (activeIndex !== null) {
-      setActiveSection(exercises[activeIndex]);
-    } else {
-      setActiveSection(null);
-    }
-  }, [activeIndex, exercises]);
+  const activeSection = activeIndex !== null ? exercises[activeIndex] : null;
 
   return (
-    <div className='m-10'>
+    <div className='m-5'>
       <div className="grid grid-cols-3 gap-8 text-white text-2xl underline font-semibold">
         {exercises.map((exercise, index) => {
-          const actualIndex = index;
-
           const buttonClassName = shouldHideButtons ? 'hidden' : 'opacity-100';
 
           return (
             <button
-              key={actualIndex}
+              key={index}
               className={`my-10 transition-opacity transition-transform duration-500 ease-in-out transform ${buttonClassName} hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
-              onClick={() => handleClick(actualIndex)}
+              onClick={() => handleClick(index)}
             >
               {exercise}
             </button>
