@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 const Table = ({ activeSection }) => {
     const [data, setData] = useState([]);
+    const [showMenu, setShowMenu] = useState(false);
+    const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+    const [selectedRow, setSelectedRow] = useState(null);
 
     useEffect(() => {
         if (activeSection !== null) {
@@ -37,6 +40,24 @@ const Table = ({ activeSection }) => {
         return formattedDate;
     };
 
+    const handleContextMenu = (e, row) => {
+        e.preventDefault();
+        setMenuPosition({ top: e.clientY, left: e.clientX });
+        setSelectedRow(row);
+        setShowMenu(true);
+    };
+
+    const handleMenuItemClick = (action) => {
+        setShowMenu(false);
+        if (action === 'edit') {
+            console.log('Edit row:', selectedRow);
+            // Implement edit logic here
+        } else if (action === 'delete') {
+            console.log('Delete row:', selectedRow);
+            // Implement delete logic here
+        }
+    };
+
     return (
         <div className="relative mt-10 w-1/2">
             <table className="overflow-auto w-full text-sm text-gray-500 dark:text-gray-400">
@@ -52,17 +73,31 @@ const Table = ({ activeSection }) => {
                 </thead>
                 <tbody>
                     {data.map((item, index) => (
-                        <tr key={index} className="border-b dark:bg-gray-800 dark:border-gray-700">
+                        <tr
+                            key={index}
+                            className="border-b dark:bg-gray-800 dark:border-gray-700"
+                            onContextMenu={(e) => handleContextMenu(e, item)}
+                        >
                             <td className="px-6 py-4">
                                 {formatDate(item.create_date)}
                             </td>
-                            <td className="px-6 py-4 font-medium text-center text-white whitespace-nowrap dark:text-white">
+                            <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
                                 {item.pounds}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            {showMenu && (
+                <div
+                    className="context-menu"
+                    style={{ top: menuPosition.top, left: menuPosition.left }}
+                >
+                    <div onClick={() => handleMenuItemClick('edit')}>Edit</div>
+                    <div onClick={() => handleMenuItemClick('delete')}>Delete</div>
+                </div>
+            )}
         </div>
     );
 };
