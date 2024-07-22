@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Chart from './Chart';
 
 const Table = ({ activeSection }) => {
     const [data, setData] = useState([]);
@@ -59,35 +60,39 @@ const Table = ({ activeSection }) => {
     };
 
     return (
-        <div className="relative mt-10 w-1/2">
-            <table className="overflow-auto w-full text-sm text-gray-500 dark:text-gray-400">
-                <thead className="text-left text-xs text-gray-400 uppercase dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" className="px-6 py-3">
-                            Create Date
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Pounds
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((item, index) => (
-                        <tr
-                            key={index}
-                            className="border-b dark:bg-gray-800 dark:border-gray-700"
-                            onContextMenu={(e) => handleContextMenu(e, item)}
-                        >
-                            <td className="px-6 py-4">
-                                {formatDate(item.create_date)}
-                            </td>
-                            <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
-                                {item.pounds}
-                            </td>
+        <div className="flex flex-row mt-10 ">
+            <div className='h-64 overflow-auto'>
+                <table className="w-full text-sm text-gray-500 dark:text-gray-400">
+                    <thead className="text-left text-xs text-gray-400 uppercase dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" className="px-6 py-3">
+                                Create Date
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Pounds
+                            </th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {data.map((item, index) => (
+                            <tr
+                                key={index}
+                                className="border-b dark:bg-gray-800 dark:border-gray-700"
+                                onContextMenu={(e) => handleContextMenu(e, item)}
+                            >
+                                <td className="px-6 py-4">
+                                    {formatDate(item.create_date)}
+                                </td>
+                                <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
+                                    {item.pounds}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <Chart data={data} />
 
             {showMenu && (
                 <div
