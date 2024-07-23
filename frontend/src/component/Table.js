@@ -60,8 +60,8 @@ const Table = ({ activeSection }) => {
     };
 
     return (
-        <div className="flex flex-row mt-10 ">
-            <div className='h-64 overflow-auto'>
+        <div className="flex flex-row mt-10 justify-between gap-5 h-64">
+            <div className='overflow-auto'>
                 <table className="w-full text-sm text-gray-500 dark:text-gray-400">
                     <thead className="text-left text-xs text-gray-400 uppercase dark:bg-gray-700 dark:text-gray-400">
                         <tr>
@@ -73,22 +73,25 @@ const Table = ({ activeSection }) => {
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {data.map((item, index) => (
-                            <tr
-                                key={index}
-                                className="border-b dark:bg-gray-800 dark:border-gray-700"
-                                onContextMenu={(e) => handleContextMenu(e, item)}
-                            >
-                                <td className="px-6 py-4">
-                                    {formatDate(item.create_date)}
-                                </td>
-                                <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
-                                    {item.pounds}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
+                    {
+                        data &&
+                        <tbody>
+                            {data.map((item, index) => (
+                                <tr
+                                    key={index}
+                                    className="border-b dark:bg-gray-800 dark:border-gray-700"
+                                    onContextMenu={(e) => handleContextMenu(e, item)}
+                                >
+                                    <td className="px-6 py-4">
+                                        {formatDate(item.create_date)}
+                                    </td>
+                                    <td className="px-6 py-4 font-medium text-white whitespace-nowrap">
+                                        {item.pounds}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    }
                 </table>
             </div>
 

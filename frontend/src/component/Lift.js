@@ -33,7 +33,7 @@ const Lift = () => {
           return (
             <button
               key={index}
-              className={`my-10 transition-opacity transition-transform duration-500 ease-in-out transform ${buttonClassName} hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
+              className={`z-1 my-10 transition-opacity transition-transform duration-500 ease-in-out transform ${buttonClassName} hover:translate-y-1 hover:text-orange-500 hover:underline hover:decoration-orange-500`}
               onClick={() => handleClick(index)}
             >
               {exercise}

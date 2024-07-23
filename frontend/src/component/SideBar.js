@@ -1,53 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sidebar } from "flowbite-react";
 import { HiArrowSmRight, HiChartPie, HiInbox, HiShoppingBag, HiTable, HiUser, HiViewBoards, HiMenuAlt2 } from "react-icons/hi";
 
 export default function SideBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef(null);
+
+  const handleClickOutside = (event) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <div className="flex">
+    <>
       <button
-        className="p-2 focus:outline-none"
+        className="p-2 focus:outline-none z-20"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <HiMenuAlt2 className="w-6 h-6" />
+        <HiMenuAlt2 className="w-6 h-6 text-white" />
       </button>
       <div
-        className={`transform transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } w-64 bg-gray-800 h-screen fixed`}
+        ref={sidebarRef}
+        className={`fixed top-0 left-0 w-1/3 h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"} z-999`}
       >
-        <Sidebar aria-label="Default sidebar example">
-          <Sidebar.Items>
-            <Sidebar.ItemGroup>
+        <Sidebar aria-label="Sidebar">
+          <Sidebar.Items className="flex flex-col p-4">
+            <Sidebar.ItemGroup className="text-left">
               <Sidebar.Item href="#" icon={HiChartPie}>
-                Dashboard
+                Squat
               </Sidebar.Item>
-              <Sidebar.Item href="#" icon={HiViewBoards} label="Pro" labelColor="dark">
-                Kanban
+              <Sidebar.Item href="#" icon={HiViewBoards}>
+                Deadlift
               </Sidebar.Item>
-              <Sidebar.Item href="#" icon={HiInbox} label="3">
-                Inbox
+              <Sidebar.Item href="#" icon={HiInbox}>
+                Bench Press
               </Sidebar.Item>
               <Sidebar.Item href="#" icon={HiUser}>
-                Users
+                Dumbbell Press
               </Sidebar.Item>
               <Sidebar.Item href="#" icon={HiShoppingBag}>
-                Products
+                Overhead Press
               </Sidebar.Item>
               <Sidebar.Item href="#" icon={HiArrowSmRight}>
-                Sign In
+                Leg Press
               </Sidebar.Item>
               <Sidebar.Item href="#" icon={HiTable}>
-                Sign Up
+                Leg Extension
               </Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>
         </Sidebar>
       </div>
-    </div>
+    </>
   );
 }
