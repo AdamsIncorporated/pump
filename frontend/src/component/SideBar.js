@@ -35,7 +35,7 @@ export default function SideBar() {
       </button>
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 w-1/3 h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"} z-999`}
+        className={`z-10 fixed top-0 left-0 w-1/4 h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <Sidebar aria-label="Sidebar">
           <Sidebar.Items className="flex flex-col p-4">
