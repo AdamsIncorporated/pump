@@ -1,13 +1,13 @@
 import "./App.css";
 import Header from "./component/Header";
-import { EntryForm } from "./component/calculator/EntryForm";
+import { BMR } from "./component/calculator/BMR";
 
 function App() {
   return (
     <div>
       <Header />
       <div className="m-5">
-        <EntryForm />
+        <BMR />
       </div>
     </div>
   );
