@@ -133,43 +133,59 @@ class Bmr extends Component {
     }
 
     return (
-      <div id="bmrcalc">
-        <div className="form">
-          <h2>BMR &amp; Daily Calorie Calculator</h2>
+      <div className="w-1/2 border-4 border-slate-700 rounded-md p-4">
+        <div className="text-white whitespace-nowwrap overflow-auto">
+          <span className="flex gap-2 items-center text-3xl mb-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-6">
+              <path
+                fillRule="evenodd"
+                d="M6.32 1.827a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V19.5a3 3 0 0 1-3 3H6.75a3 3 0 0 1-3-3V4.757c0-1.47 1.073-2.756 2.57-2.93ZM7.5 11.25a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H8.25a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H8.25Zm-.75 3a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H8.25a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V18a.75.75 0 0 0-.75-.75H8.25Zm1.748-6a.75.75 0 0 1 .75-.75h.007a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.007a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.335.75.75.75h.007a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75h-.007Zm-.75 3a.75.75 0 0 1 .75-.75h.007a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.007a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.335.75.75.75h.007a.75.75 0 0 0 .75-.75V18a.75.75 0 0 0-.75-.75h-.007Zm1.754-6a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75h-.008Zm-.75 3a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V18a.75.75 0 0 0-.75-.75h-.008Zm1.748-6a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Zm.75 1.5a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75h-.008Zm-8.25-6A.75.75 0 0 1 8.25 6h7.5a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75v-.75Zm9 9a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-2.25Z"
+                clipRule="evenodd" />
+            </svg>
+            Calculator
+          </span>
           {error}
-          <div className="inputwrap">
-            <label className="label">Gender</label>
+          <div className="my-3 flex flex-col gap-4">
+            <label className="font-bold">Gender</label>
             <label>
               <input
                 type="radio"
                 checked={this.state.gender === "1"}
                 onChange={this.handlegenderChange}
-                className="genderF"
+                className="ms-2 text-sm font-medium accent-orange-500"
                 name="gender"
                 value="1"
               />
               Female
             </label>
+            <div class="flex items-center">
+              <input checked id="default-radio-2" type="radio" value="" name="default-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <label for="default-radio-2" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Checked state</label>
+            </div>
             <label>
               <input
                 type="radio"
                 checked={this.state.gender === "2"}
                 onChange={this.handlegenderChange}
-                className="genderM"
+                className="ms-2 text-sm font-medium"
                 name="gender"
                 value="2"
               />
               Male
             </label>
           </div>
-          <div className="inputwrap">
-            <label className="label">Weight</label>
+          <div className="my-3 flex flex-col gap-4">
+            <label className="font-bold">Weight</label>
             <label>
               <input
                 type="radio"
                 checked={this.state.weightType === "1"}
                 onChange={this.handleweightTypeChange}
-                className="imperial"
+                className="ms-2 text-sm font-medium accent-orange-500"
                 name="wrightT"
                 value="1"
               />
@@ -180,23 +196,33 @@ class Bmr extends Component {
                 type="radio"
                 checked={this.state.weightType === "2"}
                 onChange={this.handleweightTypeChange}
-                className="metric"
+                className="ms-2 text-sm font-medium accent-orange-500"
                 name="wrightT"
                 value="2"
               />
               Metric (in KG)
             </label>
-            <input
-              type="number"
-              value={this.state.weight}
-              onChange={this.handleWeightChange}
-              name="weight"
-              className="weight"
-              min="0"
-              max="999"
-            />
+            <div className="my-5 relative">
+              <input
+                type="text"
+                min="0"
+                max="1000"
+                id="weightInput"
+                value={this.state.weight}
+                onChange={this.handleWeightChange}
+                className="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-inherit border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-orange-500 focus:outline-none focus:ring-0 focus:border-orange-600 peer"
+                placeholder=" "
+              />
+              <label
+                htmlFor="weightInput"
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-orange-600 peer-focus:dark:text-orange-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              >
+                {this.weightType}
+                Weight Type
+              </label>
+            </div>
           </div>
-          <div className="inputwrap">
+          <div className="flex flex-col">
             <label className="label">Height in feet and inches</label>
             <input
               type="number"
@@ -217,7 +243,7 @@ class Bmr extends Component {
               max="11"
             />
           </div>
-          <div className="inputwrap">
+          <div className="flex flex-col">
             <label className="label">Age in years</label>
             <input
               type="number"
