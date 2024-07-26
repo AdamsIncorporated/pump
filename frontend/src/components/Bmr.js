@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class BMR extends Component {
+class Bmr extends Component {
   constructor() {
     super();
     this.state = {
@@ -53,11 +53,11 @@ class BMR extends Component {
     let weightType = this.state.weightType;
 
     if (
-      age == "" ||
-      gender == "" ||
-      heightFeet == "" ||
-      heightInches == "" ||
-      weight == ""
+      age === "" ||
+      gender === "" ||
+      heightFeet === "" ||
+      heightInches === "" ||
+      weight === ""
     ) {
       this.setState({ error: "All Fields are Required" });
       return;
@@ -65,16 +65,16 @@ class BMR extends Component {
 
     let bmrCalc = "";
     let height = heightFeet * 30.48 + heightInches * 2.54;
-    if (weightType == 1) {
-      if (gender == 2) {
+    if (weightType === 1) {
+      if (gender === 2) {
         bmrCalc = 66 + 6.2 * weight + 12.7 * height - 6.76 * age;
-      } else if (gender == 1) {
+      } else if (gender === 1) {
         bmrCalc = 655.1 + 4.35 * weight + 4.7 * height - 4.7 * age;
       }
-    } else if (weightType == 2) {
-      if (gender == 2) {
+    } else if (weightType === 2) {
+      if (gender === 2) {
         bmrCalc = 66.5 + 13.75 * weight + 5.003 * height - 6.755 * age;
-      } else if (gender == 1) {
+      } else if (gender === 1) {
         bmrCalc = 655 + 9.563 * weight + 1.85 * height - 4.676 * age;
       }
     }
@@ -142,7 +142,7 @@ class BMR extends Component {
             <label>
               <input
                 type="radio"
-                checked={this.state.gender == "1"}
+                checked={this.state.gender === "1"}
                 onChange={this.handlegenderChange}
                 className="genderF"
                 name="gender"
@@ -153,7 +153,7 @@ class BMR extends Component {
             <label>
               <input
                 type="radio"
-                checked={this.state.gender == "2"}
+                checked={this.state.gender === "2"}
                 onChange={this.handlegenderChange}
                 className="genderM"
                 name="gender"
@@ -167,7 +167,7 @@ class BMR extends Component {
             <label>
               <input
                 type="radio"
-                checked={this.state.weightType == "1"}
+                checked={this.state.weightType === "1"}
                 onChange={this.handleweightTypeChange}
                 className="imperial"
                 name="wrightT"
@@ -178,7 +178,7 @@ class BMR extends Component {
             <label>
               <input
                 type="radio"
-                checked={this.state.weightType == "2"}
+                checked={this.state.weightType === "2"}
                 onChange={this.handleweightTypeChange}
                 className="metric"
                 name="wrightT"
@@ -273,4 +273,4 @@ class BMR extends Component {
   }
 }
 
-export default BMR;
+export default Bmr;

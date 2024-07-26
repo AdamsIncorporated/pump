@@ -1,13 +1,13 @@
 import "./App.css";
-import Header from "./component/Header";
-import { BMR } from "./component/calculator/BMR";
+import Header from "./components/Header";
+import Bmr from "./components/Bmr";
 
 function App() {
   return (
     <div>
       <Header />
       <div className="m-5">
-        <BMR />
+        <Bmr />
       </div>
     </div>
   );
