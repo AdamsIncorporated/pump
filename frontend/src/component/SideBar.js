@@ -40,7 +40,7 @@ const Sidebar = () => {
     <>
       <button
         ref={sidebarButtonRef}
-        className="p-2 focus:outline-none z-20 transition-opacity duration-300"
+        className="p-2 focus:outline-none z-20 transition-opacity duration-300 ease-in-out transform hover:text-orange-500"
         onClick={handleButtonClick}
       >
         <svg
