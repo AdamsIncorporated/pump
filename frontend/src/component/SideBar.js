@@ -47,7 +47,8 @@ const Sidebar = () => {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"
-          className="size-6">
+          className="size-6"
+        >
           <path
             fillRule="evenodd"
             d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z"
@@ -55,12 +56,16 @@ const Sidebar = () => {
           />
         </svg>
       </button>
+      
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 backdrop-blur-sm" />
+      )}
+      
       <div
         ref={sidebarRef}
-        className={`z-10 fixed top-0 left-0 w-1/4 h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`z-20 fixed top-0 left-0 w-1/4 h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="p-4 mt-10 h-screen max-h-fit">
+        <div className="p-4 mt-10 h-screen max-h-screen overflow-auto whitespace-nowrap">
           <h2 className="text-2xl font-semibold mb-4">Lifts</h2>
           <div className='overflow-y-auto h-3/4'>
             <div className='border-y border-slate-500 '>
@@ -100,7 +105,7 @@ const Sidebar = () => {
           {isOpen && (
             <div className='my-5 flex justify-end'>
               <button
-                className="p-2 focus:outline-none duration-300 ease-in-out transform hover:text-orange-500"
+                className="p-2 focus:outline-none hover:outline-none duration-300 ease-in-out transform hover:text-orange-500"
                 onClick={handleButtonClick}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
