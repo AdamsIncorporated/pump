@@ -56,14 +56,14 @@ const Sidebar = () => {
           />
         </svg>
       </button>
-      
+
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-10 backdrop-blur-sm" />
       )}
-      
+
       <div
         ref={sidebarRef}
-        className={`z-20 fixed top-0 left-0 w-1/4 h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`z-20 fixed top-0 left-0 w-content h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="p-4 mt-10 h-screen max-h-screen overflow-auto whitespace-nowrap">
           <h2 className="text-2xl font-semibold mb-4">Lifts</h2>
@@ -71,41 +71,41 @@ const Sidebar = () => {
             <div className='border-y border-slate-500 '>
               <div className='my-4 text-1xl'>Arms</div>
               <ul className="space-y-2">
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Bench Press</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Incline Bench</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Decline Bench</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Overhead Press</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Dumbell Bench Press</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Dumbell Tricep</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Barbell Curl</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Bench Press</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Incline Bench</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Decline Bench</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Overhead Press</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Dumbell Bench Press</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Dumbell Tricep</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Barbell Curl</a></li>
               </ul>
             </div>
             <div className='border-y border-slate-500'>
               <div className='my-4 text-1xl'>Legs</div>
               <ul className="space-y-2">
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Squat</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Hack Squat</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Belt Squat</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Split Squat</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Calf Raises</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Leg Curl</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Squat</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Hack Squat</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Belt Squat</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Split Squat</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Calf Raises</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Leg Curl</a></li>
               </ul>
             </div>
             <div className='border-y border-slate-500'>
               <div className='my-4 text-1xl'>Back</div>
               <ul className="space-y-2">
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Deadlift</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">T-Bar Row</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Lat Pulldown</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Bent-Over Row</a></li>
-                <li><a href="#" className="block py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Weighted Plank</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Deadlift</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">T-Bar Row</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Lat Pulldown</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Bent-Over Row</a></li>
+                <li><a href="#" className="block m-2 py-2 px-4 hover:bg-slate-700 rounded duration-300 ease-in-out transform hover:text-orange-500">Weighted Plank</a></li>
               </ul>
             </div>
           </div>
           {isOpen && (
             <div className='my-5 flex justify-end'>
               <button
-                className="p-2 focus:outline-none hover:outline-none duration-300 ease-in-out transform hover:text-orange-500"
+                className="p-2 outline-none ring-0 hover:outline-none hover:ring-0 duration-300 ease-in-out transform hover:text-orange-500"
                 onClick={handleButtonClick}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
