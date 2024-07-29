@@ -209,9 +209,10 @@ class Bmr extends Component {
               value={this.state.weight}
               onChange={this.handleWeightChange}
               name="heightFeet"
-              className="p-2 bg-inherit text-lg text-white w-1/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
+              className="p-2 bg-inherit text-lg text-white w-1/2 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
-              max="8"
+              max="250"
+              placeholder="weight (lbs)"
             />
           </div>
           <h1 className="font-bold border-b-4 border-slate-700">Height in feet and inches</h1>
@@ -224,6 +225,7 @@ class Bmr extends Component {
               className="p-2 bg-inherit text-lg text-white w-1/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
               max="8"
+              placeholder="feet"
             />
             <input
               type="number"
@@ -233,6 +235,7 @@ class Bmr extends Component {
               className="p-2 bg-inherit text-lg text-white w-3/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
               max="11"
+              placeholder="inches"
             />
           </div>
           <h1 className="font-bold border-b-4 border-slate-700">Age in years</h1>
@@ -245,6 +248,7 @@ class Bmr extends Component {
               name="age"
               min="0"
               max="120"
+              placeholder="years"
             />
             <button
               type="button"
