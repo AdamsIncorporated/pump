@@ -133,7 +133,7 @@ class Bmr extends Component {
     }
 
     return (
-      <div className="w-1/2 border-4 border-slate-700 rounded-md p-4">
+      <div className="w-1/2 border-4 border-slate-700 rounded-md p-5">
         <div className="text-white whitespace-nowwrap overflow-auto">
           <span className="flex gap-2 items-center text-3xl mb-2">
             <svg
@@ -149,87 +149,68 @@ class Bmr extends Component {
             Calculator
           </span>
           {error}
-          <div className="my-3 flex flex-col gap-4">
-            <label className="font-bold">Gender</label>
-            <label>
+          <h1 className="font-bold border-b-4 border-slate-700">Gender</h1>
+          <div className="my-3 flex flex-col gap-4 p-2">
+            <div className="flex items-center">
               <input
-                type="radio"
                 checked={this.state.gender === "1"}
                 onChange={this.handlegenderChange}
-                className="ms-2 text-sm font-medium accent-orange-500"
-                name="gender"
-                value="1"
-              />
-              Female
-            </label>
-            <div class="flex items-center">
-              <input checked id="default-radio-2" type="radio" value="" name="default-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                <label for="default-radio-2" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Checked state</label>
-            </div>
-            <label>
-              <input
+                id="femaleRadioBtn"
                 type="radio"
+                value="1"
+                name="gender"
+                className="w-4 h-4"
+              />
+              <label htmlFor="femaleRadioBtn" className="ms-2 text-sm font-medium">Female</label>
+            </div>
+            <div className="flex items-center">
+              <input
                 checked={this.state.gender === "2"}
                 onChange={this.handlegenderChange}
-                className="ms-2 text-sm font-medium"
+                id="maleRadioBtn"
+                type="radio"
+                value="2"
                 name="gender"
-                value="2"
+                className="w-4 h-4"
               />
-              Male
-            </label>
-          </div>
-          <div className="my-3 flex flex-col gap-4">
-            <label className="font-bold">Weight</label>
-            <label>
-              <input
-                type="radio"
-                checked={this.state.weightType === "1"}
-                onChange={this.handleweightTypeChange}
-                className="ms-2 text-sm font-medium accent-orange-500"
-                name="wrightT"
-                value="1"
-              />
-              Imperial (in lbs)
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={this.state.weightType === "2"}
-                onChange={this.handleweightTypeChange}
-                className="ms-2 text-sm font-medium accent-orange-500"
-                name="wrightT"
-                value="2"
-              />
-              Metric (in KG)
-            </label>
-            <div className="my-5 relative">
-              <input
-                type="text"
-                min="0"
-                max="1000"
-                id="weightInput"
-                value={this.state.weight}
-                onChange={this.handleWeightChange}
-                className="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-inherit border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-orange-500 focus:outline-none focus:ring-0 focus:border-orange-600 peer"
-                placeholder=" "
-              />
-              <label
-                htmlFor="weightInput"
-                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-orange-600 peer-focus:dark:text-orange-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
-              >
-                {this.weightType}
-                Weight Type
-              </label>
+              <label htmlFor="maleRadioBtn" className="ms-2 text-sm font-medium">Male</label>
             </div>
           </div>
-          <div className="flex flex-col">
-            <label className="label">Height in feet and inches</label>
+          <h1 className="font-bold border-b-4 border-slate-700">Weight</h1>
+          <div className="my-3 flex flex-col gap-4 p-2">
+            <div className="flex items-center">
+              <input
+                checked={this.state.weightType === "1"}
+                onChange={this.handleweightTypeChange}
+                id="imperialRadioBtn"
+                type="radio"
+                value="1"
+                name="weight"
+                className="w-4 h-4"
+              />
+              <label htmlFor="imperialRadioBtn" className="ms-2 text-sm font-medium">Imperial (in lbs)</label>
+            </div>
+            <div className="flex items-center">
+              <input
+                checked={this.state.weightType === "2"}
+                onChange={this.handleweightTypeChange}
+                id="metricRadioBtn"
+                type="radio"
+                value="2"
+                name="weight"
+                className="w-4 h-4"
+              />
+              <label htmlFor="metricRadioBtn" className="ms-2 text-sm font-medium">Metric (in KG)</label>
+            </div>
+          </div>
+          <h1 className="font-bold border-b-4 border-slate-700">Height in feet and inches</h1>
+          <div className="flex flex-row gap-4 my-3">
             <input
               type="number"
               value={this.state.heightFeet}
               onChange={this.handleheightFeetChange}
               name="heightFeet"
-              className="heightFeet"
+              className="bg-inherit text-sm font-medium text-white w-1/4 border-2 rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
               max="8"
             />
@@ -238,61 +219,67 @@ class Bmr extends Component {
               value={this.state.heightInches}
               onChange={this.handleheightInchesChange}
               name="heightInches"
-              className="heightInches"
+              className="bg-inherit text-sm font-medium text-white w-3/4 border-2 rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
               max="11"
             />
           </div>
-          <div className="flex flex-col">
-            <label className="label">Age in years</label>
+          <h1 className="font-bold border-b-4 border-slate-700">Age in years</h1>
+          <div className="flex flex-col gap-4 my-3">
             <input
               type="number"
               value={this.state.age}
               onChange={this.handleAgeChange}
-              className="age"
+              className="bg-inherit text-sm font-medium text-white w-3/4 border-2 rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               name="age"
               min="0"
               max="120"
             />
           </div>
-          <button type="button" onClick={() => this.calculateBMR()}>
+          <button
+            type="button"
+            onClick={() => this.calculateBMR()}
+            className="inline-flex items-center justify-end p-2 my-3 me-3 text-sm font-medium rounded group bg-gradient-to-br from-orange-700 to-orange-500 group-hover:from-orange-600 group-hover:to-orange-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-500"
+          >
             Calculate BMR
           </button>
           {resultBMR}
           {resultSug}
-          <div className="workout">
-            <div className="inputwrap">
-              <label className="label">Workout in a Week</label>
-              <select
-                className="activity"
-                value={this.state.activity}
-                onChange={this.handleactivityChange}
-                name="activity"
-              >
-                <option value="">Select your Activity</option>
-                <option value="1.2">
-                  Sedentary (Very little or no exercise, and desk job)
-                </option>
-                <option value="1.375">
-                  Lightly Active (Light exercise 1 to 3 days per week)
-                </option>
-                <option value="1.55">
-                  Moderately Active (Moderate exercise 3 to 5 days per week)
-                </option>
-                <option value="1.725">
-                  Very Active (Heavy exercise 6 to 7 days per week)
-                </option>
-                <option value="1.9">
-                  Extremely Active (Very intense exercise, and physical job,
-                  exercise multiple times per day)
-                </option>
-              </select>
-            </div>
-            <button type="button" onClick={() => this.calculateKCalories()}>
-              Calculate Calories
-            </button>
-            {resultPAL}
+          <h1 className="font-bold border-b-4 border-slate-700">Workout in a Week</h1>
+          <div className="flex flex-col gap-4 my-3">
+            <select
+              className="activity"
+              value={this.state.activity}
+              onChange={this.handleactivityChange}
+              name="activity"
+            >
+              <option value="">Select your Activity</option>
+              <option value="1.2">
+                Sedentary (Very little or no exercise, and desk job)
+              </option>
+              <option value="1.375">
+                Lightly Active (Light exercise 1 to 3 days per week)
+              </option>
+              <option value="1.55">
+                Moderately Active (Moderate exercise 3 to 5 days per week)
+              </option>
+              <option value="1.725">
+                Very Active (Heavy exercise 6 to 7 days per week)
+              </option>
+              <option value="1.9">
+                Extremely Active (Very intense exercise, and physical job,
+                exercise multiple times per day)
+              </option>
+            </select>
           </div>
+          <button
+            type="button"
+            onClick={() => this.calculateKCalories()}
+            className="inline-flex items-center justify-end my-3 p-2 mb-2 me-2 overflow-hidden text-sm font-medium rounded group bg-gradient-to-br from-orange-700 to-orange-500 group-hover:from-orange-600 group-hover:to-orange-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-500"
+          >
+            Calculate Calories
+          </button>
+          {resultPAL}
         </div>
       </div>
     );
