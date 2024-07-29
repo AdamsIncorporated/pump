@@ -1,3 +1,5 @@
+// https://codesandbox.io/s/calorie-calculator-5tdyb
+
 import React, { Component } from "react";
 
 class Bmr extends Component {
@@ -114,12 +116,12 @@ class Bmr extends Component {
   render() {
     let error;
     if (this.state.error) {
-      error = <div className="error">{this.state.error}</div>;
+      error = <div className="text-red-800">{this.state.error}</div>;
     }
 
     let resultBMR;
     if (this.state.bmr) {
-      resultBMR = <div className="resultBMR">{this.state.bmr}</div>;
+      resultBMR = <div className="text-white">{this.state.bmr}</div>;
     }
 
     let resultSug;
@@ -161,7 +163,7 @@ class Bmr extends Component {
                 name="gender"
                 className="w-4 h-4"
               />
-              <label htmlFor="femaleRadioBtn" className="ms-2 text-sm font-medium">Female</label>
+              <label htmlFor="femaleRadioBtn" className="ms-2 text-lg">Female</label>
             </div>
             <div className="flex items-center">
               <input
@@ -173,7 +175,7 @@ class Bmr extends Component {
                 name="gender"
                 className="w-4 h-4"
               />
-              <label htmlFor="maleRadioBtn" className="ms-2 text-sm font-medium">Male</label>
+              <label htmlFor="maleRadioBtn" className="ms-2 text-lg">Male</label>
             </div>
           </div>
           <h1 className="font-bold border-b-4 border-slate-700">Weight</h1>
@@ -188,7 +190,7 @@ class Bmr extends Component {
                 name="weight"
                 className="w-4 h-4"
               />
-              <label htmlFor="imperialRadioBtn" className="ms-2 text-sm font-medium">Imperial (in lbs)</label>
+              <label htmlFor="imperialRadioBtn" className="ms-2 text-lg">Imperial (in lbs)</label>
             </div>
             <div className="flex items-center">
               <input
@@ -200,17 +202,26 @@ class Bmr extends Component {
                 name="weight"
                 className="w-4 h-4"
               />
-              <label htmlFor="metricRadioBtn" className="ms-2 text-sm font-medium">Metric (in KG)</label>
+              <label htmlFor="metricRadioBtn" className="ms-2 text-lg">Metric (in KG)</label>
             </div>
+            <input
+              type="number"
+              value={this.state.weight}
+              onChange={this.handleWeightChange}
+              name="heightFeet"
+              className="p-2 bg-inherit text-lg text-white w-1/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
+              min="0"
+              max="8"
+            />
           </div>
           <h1 className="font-bold border-b-4 border-slate-700">Height in feet and inches</h1>
-          <div className="flex flex-row gap-4 my-3">
+          <div className="flex flex-row gap-4 my-3 p-2">
             <input
               type="number"
               value={this.state.heightFeet}
               onChange={this.handleheightFeetChange}
               name="heightFeet"
-              className="bg-inherit text-sm font-medium text-white w-1/4 border-2 rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
+              className="p-2 bg-inherit text-lg text-white w-1/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
               max="8"
             />
@@ -219,36 +230,36 @@ class Bmr extends Component {
               value={this.state.heightInches}
               onChange={this.handleheightInchesChange}
               name="heightInches"
-              className="bg-inherit text-sm font-medium text-white w-3/4 border-2 rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
+              className="p-2 bg-inherit text-lg text-white w-3/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               min="0"
               max="11"
             />
           </div>
           <h1 className="font-bold border-b-4 border-slate-700">Age in years</h1>
-          <div className="flex flex-col gap-4 my-3">
+          <div className="flex flex-col gap-4 my-3 p-2">
             <input
               type="number"
               value={this.state.age}
               onChange={this.handleAgeChange}
-              className="bg-inherit text-sm font-medium text-white w-3/4 border-2 rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
+              className="p-2 bg-inherit text-lg text-white w-3/4 border rounded border-slate-700 focus:border-slate-500 focus:outline-none focus:ring-0"
               name="age"
               min="0"
               max="120"
             />
+            <button
+              type="button"
+              onClick={() => this.calculateBMR()}
+              className="w-1/2 inline-flex items-center justify-center p-2 my-3 me-3 text-lg rounded group bg-gradient-to-br from-orange-700 to-orange-500 group-hover:from-orange-600 group-hover:to-orange-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-500"
+            >
+              Calculate BMR
+            </button>
+            {resultBMR}
+            {resultSug}
           </div>
-          <button
-            type="button"
-            onClick={() => this.calculateBMR()}
-            className="inline-flex items-center justify-end p-2 my-3 me-3 text-sm font-medium rounded group bg-gradient-to-br from-orange-700 to-orange-500 group-hover:from-orange-600 group-hover:to-orange-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-500"
-          >
-            Calculate BMR
-          </button>
-          {resultBMR}
-          {resultSug}
           <h1 className="font-bold border-b-4 border-slate-700">Workout in a Week</h1>
-          <div className="flex flex-col gap-4 my-3">
+          <div className="flex flex-col gap-4 my-3 p-2">
             <select
-              className="activity"
+              className="bg-slate-950 border border-slate-700 text-lg rounded focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5"
               value={this.state.activity}
               onChange={this.handleactivityChange}
               name="activity"
@@ -271,15 +282,15 @@ class Bmr extends Component {
                 exercise multiple times per day)
               </option>
             </select>
+            <button
+              type="button"
+              onClick={() => this.calculateKCalories()}
+              className="w-1/2 inline-flex items-center justify-center my-3 p-2 mb-2 me-2 overflow-hidden text-lg rounded group bg-gradient-to-br from-orange-700 to-orange-500 group-hover:from-orange-600 group-hover:to-orange-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-500"
+            >
+              Calculate Calories
+            </button>
+            {resultPAL}
           </div>
-          <button
-            type="button"
-            onClick={() => this.calculateKCalories()}
-            className="inline-flex items-center justify-end my-3 p-2 mb-2 me-2 overflow-hidden text-sm font-medium rounded group bg-gradient-to-br from-orange-700 to-orange-500 group-hover:from-orange-600 group-hover:to-orange-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-500"
-          >
-            Calculate Calories
-          </button>
-          {resultPAL}
         </div>
       </div>
     );
