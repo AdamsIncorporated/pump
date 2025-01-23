@@ -65,7 +65,7 @@ const Sidebar = () => {
         ref={sidebarRef}
         className={`z-20 fixed top-0 left-0 w-content h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="p-4 mt-10 h-screen max-h-screen overflow-auto whitespace-nowrap">
+        <div className="z-20 p-4 mt-10 h-screen max-h-screen overflow-auto whitespace-nowrap">
           <h2 className="text-2xl font-semibold mb-4">Lifts</h2>
           <div className='overflow-y-auto h-3/4'>
             <div className='border-y border-slate-500 '>
