@@ -40,7 +40,7 @@ const Sidebar = () => {
     <>
       <button
         ref={sidebarButtonRef}
-        className="p-2 focus:outline-none z-20 transition-opacity duration-300 ease-in-out transform hover:text-orange-500"
+        className="z-20 p-2 focus:outline-none transition-opacity duration-300 ease-in-out transform hover:text-orange-500"
         onClick={handleButtonClick}
       >
         <svg
@@ -58,12 +58,12 @@ const Sidebar = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-10 backdrop-blur-sm" />
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm" />
       )}
 
       <div
         ref={sidebarRef}
-        className={`z-20 fixed top-0 left-0 w-content h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed top-0 left-0 w-content h-full bg-slate-900 text-white transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="z-20 p-4 mt-10 h-screen max-h-screen overflow-auto whitespace-nowrap">
           <h2 className="text-2xl font-semibold mb-4">Lifts</h2>

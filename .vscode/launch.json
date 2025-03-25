@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Pump",
+      "name": "Pump Backend",
       "type": "lldb",
       "request": "launch",
       "cargo": {
@@ -14,6 +14,13 @@
       },
       "args": [],
       "cwd": "${workspaceFolder}/backend/"
+    },
+    {
+      "name": "Pump Frontend",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend"
     }
   ]
 }
