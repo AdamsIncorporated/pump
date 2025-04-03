@@ -12,16 +12,17 @@ function App() {
   ];
 
   return (
-    <div className="h-screen w-full flex justify-center items-center">
-      <div className="w-full h-full p-4">
+    <div className="">
+      <div className="w-full h-full">
         <ReactGridLayout
           className="layout"
           layout={layout}
           cols={4}
-          rowHeight={300}
-          width={window.innerWidth} // Make the width equal to the screen width
+          rowHeight={100}
+          width={window.innerWidth}
           isResizable={true}
-          compactType={null} // Prevents grid items from auto-arranging when resized
+          compactType={null}
+          resizeHandles={["se", "sw", "ne", "nw"]}
           draggableHandle=".drag-handle"
         >
           <div
