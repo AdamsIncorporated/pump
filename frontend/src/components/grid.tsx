@@ -16,13 +16,13 @@ const DataPanel: React.FC<DataPanelProps> = ({
   chartTitle,
 }) => {
   return (
-    <Panel minSize={20} className="border-x-2 bg-inherit">
-      <div className="w-full">
+    <Panel minSize={20} className="border-x-2">
+      <div className="flex">
         <div className={`bg-${bgColor}-200 w-fit text-black font-bold px-5`}>
           {title}
         </div>
         <div
-          className={`bg-${bgColor}-100 w-full rounded-l-none rounded-r-full`}
+          className={`bg-${bgColor}-100 w-1/3 rounded-l-none rounded-r-full`}
         ></div>
       </div>
       <div className="m-5">

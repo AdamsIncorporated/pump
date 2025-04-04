@@ -1,6 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  safelist: [
+    {
+      pattern: /bg-(red|green|blue|yellow|gray)-\d00/,
+    },
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -9,6 +14,4 @@ module.exports = {
     },
   },
   plugins: [],
-  mode: "jit", // Ensure JIT mode is enabled
-  purge: ["./src/**/*.{html,js,jsx,ts,tsx}", "./src/assets/index.html"],
 };
