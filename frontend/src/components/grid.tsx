@@ -2,19 +2,27 @@ import React from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import LineChart from "./lineChart";
 
-// Reusable Panel component
-const DataPanel = ({ title, data, bgColor, chartTitle }) => {
+interface DataPanelProps {
+  title: string;
+  data: number[];
+  bgColor: string;
+  chartTitle: string;
+}
+
+const DataPanel: React.FC<DataPanelProps> = ({
+  title,
+  data,
+  bgColor,
+  chartTitle,
+}) => {
   return (
-    <Panel minSize={20} className="border-x-2">
-      <div className="flex group">
-        <div
-          className={`bg-${bgColor}-200 group-hover:${bgColor}-300 duration-300 ease-in w-fit text-black font-bold px-5`}
-        >
+    <Panel minSize={20} className="border-x-2 bg-inherit">
+      <div className="w-full">
+        <div className={`bg-${bgColor}-200 w-fit text-black font-bold px-5`}>
           {title}
         </div>
         <div
-          className={`bg-${bgColor}-100 group-hover:${bgColor}-200 duration-300 ease-in w-1/2 rounded-l-none rounded-r-full`}
-
+          className={`bg-${bgColor}-100 w-full rounded-l-none rounded-r-full`}
         ></div>
       </div>
       <div className="m-5">
@@ -44,7 +52,7 @@ export default function Grid() {
         <PanelResizeHandle />
         <DataPanel
           title="Lift"
-          data={[]}
+          data={[67, 70, 65, 80]}
           bgColor="yellow"
           chartTitle="Lift"
         />
