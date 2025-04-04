@@ -1,12 +1,14 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import LineChart from "./lineChart";
+import Weight from "./weight/weight";
 
 interface DataPanelProps {
   title: string;
   data: number[];
   bgColor: string;
   chartTitle: string;
+  children?: ReactNode;
 }
 
 const DataPanel: React.FC<DataPanelProps> = ({
@@ -14,6 +16,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
   data,
   bgColor,
   chartTitle,
+  children,
 }) => {
   return (
     <Panel minSize={20} className="border-x-2">
@@ -27,6 +30,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
       </div>
       <div className="m-5">
         <LineChart chartTitle={chartTitle} data={data} />
+        {children}
       </div>
     </Panel>
   );
@@ -48,7 +52,9 @@ export default function Grid() {
           data={[67, 70, 65, 80]}
           bgColor="blue"
           chartTitle="Weight (lbs)"
-        />
+        >
+          <Weight />
+        </DataPanel>
         <PanelResizeHandle />
         <DataPanel
           title="Lift"
