@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { useState, ReactNode } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import LineChart from "./lineChart";
 import Weight from "./weight/weight";
+import TableDisplay from "./table";
 
 interface DataPanelProps {
   title: string;
@@ -18,6 +19,8 @@ const DataPanel: React.FC<DataPanelProps> = ({
   chartTitle,
   children,
 }) => {
+  const [isDefaultPane, setIsDefaultPane] = useState("chart");
+
   return (
     <Panel minSize={20} className="border-x-2">
       <div className="flex">
@@ -29,7 +32,33 @@ const DataPanel: React.FC<DataPanelProps> = ({
         ></div>
       </div>
       <div className="m-5">
-        <LineChart chartTitle={chartTitle} data={data} />
+        <div className="flex-row border-2 border-slate-800 rounded">
+          <div className="flex bg-slate-900">
+            <div
+              onClick={() => {
+                setIsDefaultPane("chart");
+              }}
+              className="hover:underline hover:cursor-pointer border-r-2 border-slate-800 px-2"
+            >
+              Chart
+            </div>
+            <div
+              onClick={() => {
+                setIsDefaultPane("data");
+              }}
+              className="hover:underline hover:cursor-pointer px-2"
+            >
+              Data
+            </div>
+          </div>
+          <div className="p-5">
+            {isDefaultPane === "chart" ? (
+              <LineChart chartTitle={chartTitle} data={data} />
+            ) : (
+              <TableDisplay/>
+            )}
+          </div>
+        </div>
         {children}
       </div>
     </Panel>
