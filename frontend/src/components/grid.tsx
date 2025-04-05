@@ -2,7 +2,7 @@ import React, { useState, ReactNode } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import LineChart from "./lineChart";
 import Weight from "./weight/weight";
-import TableDisplay from "./table";
+import AgDarkTable from "./table";
 
 interface DataPanelProps {
   title: string;
@@ -55,7 +55,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
             {isDefaultPane === "chart" ? (
               <LineChart chartTitle={chartTitle} data={data} />
             ) : (
-              <TableDisplay/>
+              <AgDarkTable/>
             )}
           </div>
         </div>

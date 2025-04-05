@@ -1,72 +1,34 @@
-import * as React from "react";
-import {
-  Table,
-  Header,
-  HeaderRow,
-  HeaderCell,
-  Body,
-  Row,
-  Cell,
-} from "@table-library/react-table-library/table";
+import React from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef } from 'ag-grid-community';
+// Import the necessary modules and register them
+import { ModuleRegistry } from '@ag-grid-community/core';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 
-const TableDisplay = () => {
-  const list = [
-    {
-      id: "1",
-      name: "VSCode",
-      deadline: new Date(2020, 1, 17),
-      type: "SETUP",
-      isComplete: true,
-    },
-    {
-      id: "2",
-      name: "JavaScript",
-      deadline: new Date(2020, 2, 28),
-      type: "LEARN",
-      isComplete: true,
-    },
-    {
-      id: "3",
-      name: "React",
-      deadline: new Date(2020, 3, 8),
-      type: "LEARN",
-      isComplete: false,
-    },
+// Register the required module with the Grid
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
+
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine-dark.css';
+
+const AgDarkTable: React.FC = () => {
+  const rowData = [
+    { name: 'John', age: 25, country: 'USA' },
+    { name: 'Alice', age: 30, country: 'UK' },
+    { name: 'Bob', age: 28, country: 'Canada' },
   ];
-  const data = { nodes: list };
+
+  const columnDefs: ColDef[] = [
+    { field: 'name', headerName: 'Name' },
+    { field: 'age', headerName: 'Age' },
+    { field: 'country', headerName: 'Country' },
+  ];
 
   return (
-    <Table data={data}>
-      {(tableList) => (
-        <>
-          <Header>
-            <HeaderRow>
-              <HeaderCell>Task</HeaderCell>
-              <HeaderCell>Deadline</HeaderCell>
-              <HeaderCell>Type</HeaderCell>
-              <HeaderCell>Complete</HeaderCell>
-            </HeaderRow>
-          </Header>
-          <Body>
-            {tableList.map((item) => (
-              <Row key={item.id} item={item}>
-                <Cell>{item.name}</Cell>
-                <Cell>
-                  {item.deadline.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}
-                </Cell>
-                <Cell>{item.type}</Cell>
-                <Cell>{item.isComplete.toString()}</Cell>
-              </Row>
-            ))}
-          </Body>
-        </>
-      )}
-    </Table>
+    <div className="ag-theme-alpine-dark" style={{ height: 400, width: '100%' }}>
+      <AgGridReact rowData={rowData} columnDefs={columnDefs} />
+    </div>
   );
 };
 
-export default TableDisplay;
+export default AgDarkTable;
