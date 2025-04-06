@@ -31,7 +31,9 @@ impl Database {
 
         // Prepare and execute the SQL statement
         let mut stmt = self.conn.prepare(&sql)?;
-        stmt.execute([2i32, 3i32])
-            .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
+        let _ = stmt.execute([2i32, 3i32])
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error>);
+
+        Ok(1)
     }
 }

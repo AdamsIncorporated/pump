@@ -11,6 +11,7 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
       "preLaunchTask": "Start Backend",
+      "stopAtEntry": false
     },
     {
       "name": "Pump Frontend",
