@@ -1,5 +1,5 @@
 use crate::db::Database;
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{error::ErrorBadRequest, post, web, Error as ActixError, HttpResponse, Responder};
 use log::error;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
@@ -16,17 +16,20 @@ pub struct CreatePayload {
 }
 
 impl CreatePayload {
-    pub fn get_table_name_keys(&self) -> Option<Vec<String>> {
+    pub fn get_table_name(&self) -> Result<&str, actix_web::Error> {
         self.table_name
             .as_ref()
-            .and_then(|v| v.as_object().map(|object| object.keys().cloned().collect()))
+            .ok_or_else(|| ErrorBadRequest("Missing table name"))?
+            .as_str()
+            .ok_or_else(|| ErrorBadRequest("Table name is not a string"))
     }
 
-    pub fn get_data_keys(&self) -> Option<Vec<String>> {
-        // Same as above, for the data field
+    pub fn get_data_keys(&self) -> Result<Vec<String>, actix_web::Error> {
         self.data
             .as_ref()
-            .and_then(|v| v.as_object().map(|obj| obj.keys().cloned().collect()))
+            .and_then(|v| v.as_object())
+            .map(|obj| obj.keys().cloned().collect())
+            .ok_or_else(|| actix_web::error::ErrorInternalServerError("Failed to get keys"))
     }
 }
 

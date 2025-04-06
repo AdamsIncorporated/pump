@@ -16,3 +16,7 @@ rusqlite = { version = "0.31.0", features = ["bundled"] }
 serde = "1.0.204"
 serde_json = "1.0.120"
 tauri = "1.6.8"
+
+[profile.dev]
+opt-level = 0
+overflow-checks = false
