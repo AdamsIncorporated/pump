@@ -7,13 +7,15 @@ pub struct Database {
     conn: Connection,
 }
 
+type DatabaseResult = Result<usize, Box<dyn std::error::Error>>;
+
 impl Database {
     pub fn new() -> Result<Database> {
         let conn = Connection::open("./data/main.db")?;
         Ok(Database { conn })
     }
 
-    pub fn create(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
+    pub fn create(&mut self, payload: &CreatePayload) -> DatabaseResult {
         let mut total_lines_inserted: usize = 0;
         let table_name = payload.get_table_name()?;
         let keys = payload.get_data_keys()?;
@@ -67,7 +69,22 @@ impl Database {
         }
         drop(stmt);
         transaction.commit()?;
-        info!("\nTRANSACTION COMMITTED FOR A TOTAL OF {}", total_lines_inserted);
+        info!(
+            "\nTRANSACTION COMMITTED FOR A TOTAL OF {}",
+            total_lines_inserted
+        );
         Ok(total_lines_inserted)
+    }
+
+    fn read(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
+        Ok(1)
+    }
+
+    fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
+        Ok(1)
+    }
+
+    fn delete(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
+        Ok(1)
     }
 }
