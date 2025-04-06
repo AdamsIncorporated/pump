@@ -2,7 +2,7 @@ import React from "react";
 import { PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import DataPanel from "./panel";
 
-const panels = [
+const panelData = [
   {
     title: "Calories",
     chartData: [1, 2, 3, 4],
@@ -34,7 +34,7 @@ export default function Grid() {
   return (
     <div className="h-screen">
       <PanelGroup autoSaveId="persistence" direction="horizontal">
-        {panels.map((panel, index) => (
+        {panelData.map((panel, index) => (
           <React.Fragment key={panel.title}>
             <DataPanel
               title={panel.title}
@@ -44,7 +44,7 @@ export default function Grid() {
               tableHeaders={tableHeaders}
               tableData={tableData}
             />
-            {index < panels.length - 1 && <PanelResizeHandle />}
+            {index < panelData.length - 1 && <PanelResizeHandle />}
           </React.Fragment>
         ))}
       </PanelGroup>
