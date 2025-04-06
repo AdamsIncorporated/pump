@@ -12,17 +12,17 @@ module.exports = {
       directory: path.join(__dirname, "src", "assets"),
     },
     historyApiFallback: true,
-    // proxy: [
-    //   {
-    //     context: ["/api"],
-    //     target: "http://localhost:5000",
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       "^/api": "",
-    //     },
-    //     logLevel: "debug",
-    //   },
-    // ],
+    proxy: [
+      {
+        context: ["/api"],
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": "",
+        },
+        logLevel: "debug",
+      },
+    ],
   },
   output: {
     filename: "bundle.js",

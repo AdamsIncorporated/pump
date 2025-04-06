@@ -1,18 +1,6 @@
-use rusqlite::{params, Connection, Result};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Lifts {
-    lifts: Option<Vec<Lift>>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Lift {
-    id: Option<i32>,
-    exercise: Option<String>,
-    pounds: Option<i32>,
-    create_date: Option<String>,
-}
+use crate::handlers::create::CreatePayload;
+use serde_json::Value as SerdeValue;
+use rusqlite::{Connection, Result};
 
 pub struct Database {
     conn: Connection,
@@ -20,43 +8,47 @@ pub struct Database {
 
 impl Database {
     pub fn new() -> Result<Database> {
-        let conn = Connection::open("main.db")?;
+        let conn = Connection::open("./data/main.db")?;
         Ok(Database { conn })
     }
 
-    // Methods for handling Lift
-    pub fn create(&self, lift: &Lift) -> Result<usize> {
-        self.conn.execute(
-            "INSERT INTO Lift (Exercise, Pounds) VALUES (?1, ?2)",
-            params![lift.exercise, lift.pounds],
-        )
-    }
+    pub fn create(&self, payload: &CreatePayload) -> Result<usize> {
+        // Grab table name
+        let table_name = payload.table_name.unwrap_or_default();
 
-    pub fn read(&self, lift: &Lift) -> Result<Lifts> {
-        let mut stmt = self
-            .conn
-            .prepare("SELECT * FROM Lift WHERE Exercise = ?1")?;
-        let lift_iter = stmt.query_map(params![lift.exercise], |row| {
-            Ok(Lift {
-                id: row.get(0)?,
-                exercise: row.get(1)?,
-                pounds: row.get(2)?,
-                create_date: row.get(3)?,
-            })
-        })?;
+        // Construct columsn names string
+        let keys = payload.get_data_keys().unwrap_or_default();
+        let columns = keys.join(", ");
 
-        let mut lifts = Vec::new();
-        for lift in lift_iter {
-            lifts.push(lift?);
-        }
+        // Extract the values from the data field (unwrap or default to an empty map)
+        let values = payload
+            .data
+            .as_ref()
+            .and_then(|data| data.as_object())
+            .cloned()
+            .unwrap_or_default();
 
-        Ok(Lifts {
-            lifts: if lifts.is_empty() { None } else { Some(lifts) },
-        })
-    }
+        // contrsut placeholders
+        let placeholders = keys
+            .iter()
+            .map(|_| "?".to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
 
-    pub fn delete(&self, lift: &Lift) -> Result<usize> {
-        self.conn
-            .execute("DELETE FROM Lift WHERE Id = ?1", params![lift.id])
+        let sql = format!(
+            "INSERT INTO {} ({}) VALUES ({})",
+            table_name, columns, placeholders
+        );
+
+        // Extract the values based on the keys in order
+        let params: Vec<&dyn rusqlite::ToSql> = keys
+            .iter()
+            .map(|key| values.get(key).unwrap_or(&SerdeValue::Null)) // Default to null if no value is found
+            .map(|v| v as &dyn rusqlite::ToSql)
+            .collect();
+
+        // Prepare the statement and execute the insert
+        let mut stmt = self.conn.prepare(&sql)?;
+        stmt.execute(params.as_slice())
     }
 }
