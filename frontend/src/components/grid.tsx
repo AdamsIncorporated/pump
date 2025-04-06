@@ -2,21 +2,25 @@ import React, { useState, ReactNode } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import LineChart from "./lineChart";
 import Weight from "./weight/weight";
-import AgDarkTable from "./table";
+import TableComponent from "./table";
 
 interface DataPanelProps {
   title: string;
-  data: number[];
+  chartData: any[];
   bgColor: string;
   chartTitle: string;
+  tableHeaders: string[];
+  tableData: any[];
   children?: ReactNode;
 }
 
 const DataPanel: React.FC<DataPanelProps> = ({
   title,
-  data,
+  chartData: data,
   bgColor,
   chartTitle,
+  tableHeaders,
+  tableData,
   children,
 }) => {
   const [isDefaultPane, setIsDefaultPane] = useState("chart");
@@ -55,7 +59,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
             {isDefaultPane === "chart" ? (
               <LineChart chartTitle={chartTitle} data={data} />
             ) : (
-              <AgDarkTable/>
+              <TableComponent headers={tableHeaders} data={tableData} />
             )}
           </div>
         </div>
@@ -71,25 +75,43 @@ export default function Grid() {
       <PanelGroup autoSaveId="persistence" direction="horizontal">
         <DataPanel
           title="Calories"
-          data={[1, 2, 3, 4]}
+          chartData={[1, 2, 3, 4]}
           bgColor="red"
           chartTitle="Calories"
+          tableHeaders={["Name", "Age", "Role"]}
+          tableData={[
+            ["Alice", 25, "Engineer"],
+            ["Bob", 30, "Designer"],
+            ["Charlie", 28, "Manager"],
+          ]}
         />
         <PanelResizeHandle />
         <DataPanel
           title="Weight"
-          data={[67, 70, 65, 80]}
+          chartData={[67, 70, 65, 80]}
           bgColor="blue"
           chartTitle="Weight (lbs)"
+          tableHeaders={["Name", "Age", "Role"]}
+          tableData={[
+            ["Alice", 25, "Engineer"],
+            ["Bob", 30, "Designer"],
+            ["Charlie", 28, "Manager"],
+          ]}
         >
           <Weight />
         </DataPanel>
         <PanelResizeHandle />
         <DataPanel
           title="Lift"
-          data={[67, 70, 65, 80]}
+          chartData={[67, 70, 65, 80]}
           bgColor="yellow"
           chartTitle="Lift"
+          tableHeaders={["Name", "Age", "Role"]}
+          tableData={[
+            ["Alice", 25, "Engineer"],
+            ["Bob", 30, "Designer"],
+            ["Charlie", 28, "Manager"],
+          ]}
         />
       </PanelGroup>
     </div>

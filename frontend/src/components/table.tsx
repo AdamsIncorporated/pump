@@ -1,34 +1,43 @@
-import React from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import { ColDef } from 'ag-grid-community';
-// Import the necessary modules and register them
-import { ModuleRegistry } from '@ag-grid-community/core';
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import React from "react";
 
-// Register the required module with the Grid
-ModuleRegistry.registerModules([ClientSideRowModelModule]);
+interface TableComponentProps {
+  headers: string[];
+  data: (string | number | React.ReactNode)[][];
+}
 
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine-dark.css';
-
-const AgDarkTable: React.FC = () => {
-  const rowData = [
-    { name: 'John', age: 25, country: 'USA' },
-    { name: 'Alice', age: 30, country: 'UK' },
-    { name: 'Bob', age: 28, country: 'Canada' },
-  ];
-
-  const columnDefs: ColDef[] = [
-    { field: 'name', headerName: 'Name' },
-    { field: 'age', headerName: 'Age' },
-    { field: 'country', headerName: 'Country' },
-  ];
-
+const TableComponent: React.FC<TableComponentProps> = ({ headers, data }) => {
   return (
-    <div className="ag-theme-alpine-dark" style={{ height: 400, width: '100%' }}>
-      <AgGridReact rowData={rowData} columnDefs={columnDefs} />
+    <div className="overflow-x-auto rounded-xl shadow-md border dark:border-gray-700">
+      <table className="min-w-full text-sm text-left text-gray-700 dark:text-gray-300">
+        <thead className="bg-gray-100 dark:bg-gray-800">
+          <tr>
+            {headers.map((header, index) => (
+              <th
+                key={index}
+                className="px-4 py-3 font-medium tracking-wide uppercase whitespace-nowrap"
+              >
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          {data.map((row, rowIndex) => (
+            <tr
+              key={rowIndex}
+              className="hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex} className="px-4 py-3 whitespace-nowrap">
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
 
-export default AgDarkTable;
+export default TableComponent;
