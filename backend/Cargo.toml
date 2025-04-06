@@ -19,5 +19,6 @@ serde_json = "1.0.120"
 tauri = "1.6.8"
 
 [profile.dev]
+debug = true
 opt-level = 0
 overflow-checks = false
