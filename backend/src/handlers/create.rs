@@ -76,7 +76,7 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     }
 
     // create a new instanc eof database
-    let db = match Database::new() {
+    let mut db = match Database::new() {
         Ok(db) => db,
         Err(err) => {
             error!("Failed to find the main.db file for the database!: {}", err);
