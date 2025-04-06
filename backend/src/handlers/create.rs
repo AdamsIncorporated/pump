@@ -1,5 +1,5 @@
 use crate::db::Database;
-use actix_web::{error::ErrorBadRequest, post, web, Error as ActixError, HttpResponse, Responder};
+use actix_web::{error::ErrorBadRequest, post, web, HttpResponse, Responder};
 use log::error;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;

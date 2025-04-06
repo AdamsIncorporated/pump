@@ -1,7 +1,5 @@
 use crate::handlers::create::CreatePayload;
-use rusqlite::{self, Connection, Result, ToSql};
-use serde::de::Error;
-use serde_json::Value as SerdeValue;
+use rusqlite::{self, Connection, Result};
 
 pub struct Database {
     conn: Connection,
