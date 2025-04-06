@@ -2,18 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Pump Backend",
-      "type": "lldb",
+      "type": "cppvsdbg",
       "request": "launch",
-      "cargo": {
-        "args": ["build", "--package=pump", "--bin=pump"],
-        "filter": {
-          "name": "pump",
-          "kind": "bin"
-        }
-      },
+      "name": "Debug Pump - Backend",
+      "program": "${workspaceFolder}/backend/target/debug/pump.exe",
       "args": [],
-      "cwd": "${workspaceFolder}/backend/"
+      "cwd": "${workspaceRoot}/backend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "stopAtEntry": false
     },
     {
       "name": "Pump Frontend",
