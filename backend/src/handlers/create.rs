@@ -1,8 +1,28 @@
 use crate::db::Database;
-use actix_web::{error::ErrorBadRequest, post, web, HttpResponse, Responder};
+use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
+use std::fmt;
+
+#[derive(Debug)]
+pub enum CreatePayloadKeyError {
+    JsonParseError(String),
+    MissingFieldError(String),
+}
+
+impl fmt::Display for CreatePayloadKeyError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            CreatePayloadKeyError::JsonParseError(msg) => write!(f, "JSON Parse Error: {}", msg),
+            CreatePayloadKeyError::MissingFieldError(msg) => {
+                write!(f, "Missing Field Error: {}", msg)
+            }
+        }
+    }
+}
+
+impl std::error::Error for CreatePayloadKeyError {}
 
 #[derive(Serialize)]
 pub struct ResponseMessage {
@@ -16,20 +36,34 @@ pub struct CreatePayload {
 }
 
 impl CreatePayload {
-    pub fn get_table_name(&self) -> Result<&str, actix_web::Error> {
+    pub fn get_table_name(&self) -> Result<&str, CreatePayloadKeyError> {
         self.table_name
             .as_ref()
-            .ok_or_else(|| ErrorBadRequest("Missing table name"))?
+            .ok_or_else(|| {
+                CreatePayloadKeyError::MissingFieldError(
+                    "Table name is missing from payload.".to_string(),
+                )
+            })?
             .as_str()
-            .ok_or_else(|| ErrorBadRequest("Table name is not a string"))
+            .ok_or_else(|| {
+                CreatePayloadKeyError::JsonParseError(
+                    "Failed to convert table name to a string.".to_string(),
+                )
+            })
     }
 
-    pub fn get_data_keys(&self) -> Result<Vec<String>, actix_web::Error> {
+    pub fn get_data_keys(&self) -> Result<Vec<String>, CreatePayloadKeyError> {
         self.data
             .as_ref()
-            .and_then(|v| v.as_object())
+            .and_then(|data| data.as_array())
+            .and_then(|arr| arr.get(0))
+            .and_then(|obj| obj.as_object())
             .map(|obj| obj.keys().cloned().collect())
-            .ok_or_else(|| actix_web::error::ErrorInternalServerError("Failed to get keys"))
+            .ok_or_else(|| {
+                CreatePayloadKeyError::JsonParseError(
+                    "Failed to get keys from create payload.".to_string(),
+                )
+            })
     }
 }
 
