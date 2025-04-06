@@ -10,6 +10,7 @@
       "cwd": "${workspaceRoot}/backend",
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "Start Backend",
       "stopAtEntry": false
     },
     {

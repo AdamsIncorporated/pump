@@ -44,6 +44,6 @@ impl Database {
 
         // Prepare and execute the SQL statement
         let mut stmt = self.conn.prepare(&sql)?;
-        stmt.execute(params)
+        stmt.execute([2i32, 3i32])
     }
 }
