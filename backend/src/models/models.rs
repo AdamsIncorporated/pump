@@ -1,6 +1,14 @@
 use chrono::NaiveDateTime;
+use rusqlite::Row;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::collections::HashMap;
+
+trait TableRow {
+    fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
+    where
+        Self: Sized;
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Lift {
@@ -32,29 +40,73 @@ pub struct Weight {
     pub weight_lbs: f64,
 }
 
-pub enum ModelMap {
-    Lift(Lift),
-    Calories(Calories),
-    Weight(Weight),
+pub fn create_table_map() -> HashMap<&'static str, fn() -> Box<dyn TableRow>> {
+    let table_map: HashMap<&'static str, fn() -> Box<dyn TableRow>> = [
+        ("lift", || Box::new(Lift::new())), // Using a method like Lift::new()
+        ("calories", || Box::new(Calories::new())), // Using a method like Calories::new()
+        ("weight", || Box::new(Weight::new())), // Using a method like Weight::new()
+    ]
+    .iter()
+    .cloned()
+    .collect();
+
+    table_map
 }
 
-impl ModelMap {
-    // This function takes a string and returns a Result with the deserialized struct
-    pub fn from_str(data_type: &str, json_data: &str) -> Result<ModelMap, String> {
-        match data_type {
-            "lift" => {
-                let lift: Result<Lift, _> = serde_json::from_str(json_data);
-                lift.map(ModelMap::Lift).map_err(|e| e.to_string())
-            }
-            "calories" => {
-                let calories: Result<Calories, _> = serde_json::from_str(json_data);
-                calories.map(ModelMap::Calories).map_err(|e| e.to_string())
-            }
-            "weight" => {
-                let weight: Result<Weight, _> = serde_json::from_str(json_data);
-                weight.map(ModelMap::Weight).map_err(|e| e.to_string())
-            }
-            _ => Err("Invalid data type".to_string()),
-        }
+// Implement the TableRow trait for each struct
+impl TableRow for Lift {
+    fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
+        Ok(Lift {
+            id: row.get(0)?,
+            created_at: row.get(1)?,
+            exercise: row.get(2)?,
+            sets: row.get(3)?,
+            reps: row.get(4)?,
+            weight_lbs: row.get(5)?,
+        })
+    }
+}
+
+impl TableRow for Calories {
+    fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
+        Ok(Calories {
+            id: row.get(0)?,
+            created_at: row.get(1)?,
+            carbs: row.get(2)?,
+            protein: row.get(3)?,
+            saturated_fat: row.get(4)?,
+            trans_fat: row.get(5)?,
+            monounsaturated_fat: row.get(6)?,
+            polyunsaturated_fat: row.get(7)?,
+            total_calories: row.get(8)?,
+        })
+    }
+}
+
+impl TableRow for Weight {
+    fn from_row(row: &rusqlite::Row) -> Result<Self, rusqlite::Error> {
+        Ok(Weight {
+            id: row.get(0)?,
+            created_at: row.get(1)?,
+            weight_lbs: row.get(2)?,
+        })
+    }
+}
+
+impl Lift {
+    pub fn new() -> Self {
+        Lift
+    }
+}
+
+impl Calories {
+    pub fn new() -> Self {
+        Calories
+    }
+}
+
+impl Weight {
+    pub fn new() -> Self {
+        Weight
     }
 }
