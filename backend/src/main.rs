@@ -1,10 +1,11 @@
 use actix_web::{App, HttpServer};
-mod cors;
-mod db;
 use actix_web::middleware::Logger;
-mod handlers;
 use handlers::create::create;
 use log::info;
+pub mod models;
+pub mod db;
+pub mod cors;
+pub mod handlers;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
