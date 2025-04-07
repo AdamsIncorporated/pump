@@ -1,4 +1,5 @@
 use crate::handlers::create::CreatePayload;
+use crate::models::models::{Calories, Lift, Weight};
 use log::info;
 use rusqlite::{self, params_from_iter, Connection, Result, Row, ToSql};
 use serde_json::Value as SerdeValue;
@@ -84,9 +85,7 @@ impl Database {
 
         // Create a vector to hold the rows.
         let mut json_rows = Vec::new();
-        let rows = stmt.query_map([], |row|{
-            Ok(())
-        });
+        let rows = stmt.query_map([], |row| Ok(()));
     }
 
     fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
