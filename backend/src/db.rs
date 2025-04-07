@@ -1,9 +1,8 @@
-use std::collections::HashMap;
-
 use crate::handlers::create::CreatePayload;
 use log::info;
-use rusqlite::{self, params_from_iter, Connection, Result, ToSql};
-use serde_json::Value;
+use rusqlite::{self, params_from_iter, types::Value as RusqliteValue, Connection, Result, ToSql};
+use serde_json::Value as SerdeValue;
+use std::collections::HashMap;
 
 pub struct Database {
     conn: Connection,
@@ -40,15 +39,15 @@ impl Database {
         let transaction = self.conn.transaction()?;
         let mut stmt = transaction.prepare(&sql)?;
 
-        if let Some(Value::Array(items)) = &payload.data {
+        if let Some(SerdeValue::Array(items)) = &payload.data {
             for row in items {
-                if let Value::Object(map) = row {
+                if let SerdeValue::Object(map) = row {
                     let values: Vec<Box<dyn ToSql>> = map
                         .values()
                         .map(|v| match v {
-                            Value::Null => Box::new(None::<String>) as Box<dyn ToSql>,
-                            Value::Bool(b) => Box::new(*b) as Box<dyn ToSql>,
-                            Value::Number(n) => {
+                            SerdeValue::Null => Box::new(None::<String>) as Box<dyn ToSql>,
+                            SerdeValue::Bool(b) => Box::new(*b) as Box<dyn ToSql>,
+                            SerdeValue::Number(n) => {
                                 if let Some(i) = n.as_i64() {
                                     Box::new(i) as Box<dyn ToSql>
                                 } else if let Some(f) = n.as_f64() {
@@ -57,7 +56,7 @@ impl Database {
                                     Box::new(n.to_string()) as Box<dyn ToSql>
                                 }
                             }
-                            Value::String(s) => Box::new(s.clone()) as Box<dyn ToSql>,
+                            SerdeValue::String(s) => Box::new(s.clone()) as Box<dyn ToSql>,
                             _ => Box::new(v.to_string()) as Box<dyn ToSql>,
                         })
                         .collect();
@@ -78,20 +77,29 @@ impl Database {
         Ok(total_lines_inserted)
     }
 
-    fn read(&mut self, payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
+    fn read(&self, payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
         let table_name = payload.get_table_name()?;
         let sql = format!("SELECT * FROM {}", table_name);
 
-        let mut stmt = self.conn.prepare(&sql)?;
+        // Prepare the query to fetch all rows from a table
+        let stmt = &self.conn.prepare("SELECT * FROM my_table")?;
+
+        // Get column names dynamically from the statement
         let column_names = stmt.column_names().to_vec();
 
         // Query the rows and dynamically create a HashMap for each row
-        let rows = stmt.query_map([], |row| {
+        let rows = &stmt.query_map([], |row| {
             let mut row_map = HashMap::new();
 
-            // Loop through each column and insert dynamically into the map
             for (i, column_name) in column_names.iter().enumerate() {
-                let value: Value = row.get(i)?;
+                let value: SerdeValue = match row.get::<usize, RusqliteValue>(i)? {
+                    // Match each type to a corresponding JSON value
+                    RusqliteValue::Null => SerdeValue::Null,
+                    RusqliteValue::Integer(i) => SerdeValue::Number(serde_json::Number::from(i)),
+                    RusqliteValue::Real(r) => SerdeValue::Number(serde_json::Number::from_f64(r).unwrap()),
+                    RusqliteValue::Text(t) => SerdeValue::String(t),
+                    RusqliteValue::Blob(_) => SerdeValue::String("Binary data".to_string()), // Handle BLOBs as strings or some custom format
+                };
                 row_map.insert(column_name.to_string(), value);
             }
             Ok(row_map)
@@ -103,8 +111,8 @@ impl Database {
             result_vec.push(row?);
         }
 
+        // Serialize the result into JSON and return it as a string
         let json_result = serde_json::to_string(&result_vec)?;
-
         Ok(json_result)
     }
 
