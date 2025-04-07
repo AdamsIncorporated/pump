@@ -1,6 +1,6 @@
 use crate::handlers::create::CreatePayload;
 use log::info;
-use rusqlite::{self, params_from_iter, types::Value as RusqliteValue, Connection, Result, ToSql};
+use rusqlite::{self, params_from_iter, Connection, Result, Row, ToSql};
 use serde_json::Value as SerdeValue;
 use std::collections::HashMap;
 
@@ -80,40 +80,13 @@ impl Database {
     fn read(&self, payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
         let table_name = payload.get_table_name()?;
         let sql = format!("SELECT * FROM {}", table_name);
+        let mut stmt = self.conn.prepare(&sql)?;
 
-        // Prepare the query to fetch all rows from a table
-        let stmt = &self.conn.prepare("SELECT * FROM my_table")?;
-
-        // Get column names dynamically from the statement
-        let column_names = stmt.column_names().to_vec();
-
-        // Query the rows and dynamically create a HashMap for each row
-        let rows = &stmt.query_map([], |row| {
-            let mut row_map = HashMap::new();
-
-            for (i, column_name) in column_names.iter().enumerate() {
-                let value: SerdeValue = match row.get::<usize, RusqliteValue>(i)? {
-                    // Match each type to a corresponding JSON value
-                    RusqliteValue::Null => SerdeValue::Null,
-                    RusqliteValue::Integer(i) => SerdeValue::Number(serde_json::Number::from(i)),
-                    RusqliteValue::Real(r) => SerdeValue::Number(serde_json::Number::from_f64(r).unwrap()),
-                    RusqliteValue::Text(t) => SerdeValue::String(t),
-                    RusqliteValue::Blob(_) => SerdeValue::String("Binary data".to_string()), // Handle BLOBs as strings or some custom format
-                };
-                row_map.insert(column_name.to_string(), value);
-            }
-            Ok(row_map)
-        })?;
-
-        // Collect the rows into a vector
-        let mut result_vec = Vec::new();
-        for row in rows {
-            result_vec.push(row?);
-        }
-
-        // Serialize the result into JSON and return it as a string
-        let json_result = serde_json::to_string(&result_vec)?;
-        Ok(json_result)
+        // Create a vector to hold the rows.
+        let mut json_rows = Vec::new();
+        let rows = stmt.query_map([], |row|{
+            Ok(())
+        });
     }
 
     fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
