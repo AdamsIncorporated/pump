@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::handlers::create::CreatePayload;
 use log::info;
 use rusqlite::{self, params_from_iter, Connection, Result, ToSql};
@@ -76,8 +78,34 @@ impl Database {
         Ok(total_lines_inserted)
     }
 
-    fn read(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
-        Ok(1)
+    fn read(&mut self, payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
+        let table_name = payload.get_table_name()?;
+        let sql = format!("SELECT * FROM {}", table_name);
+
+        let mut stmt = self.conn.prepare(&sql)?;
+        let column_names = stmt.column_names().to_vec();
+
+        // Query the rows and dynamically create a HashMap for each row
+        let rows = stmt.query_map([], |row| {
+            let mut row_map = HashMap::new();
+
+            // Loop through each column and insert dynamically into the map
+            for (i, column_name) in column_names.iter().enumerate() {
+                let value: Value = row.get(i)?;
+                row_map.insert(column_name.to_string(), value);
+            }
+            Ok(row_map)
+        })?;
+
+        // Collect the rows into a vector
+        let mut result_vec = Vec::new();
+        for row in rows {
+            result_vec.push(row?);
+        }
+
+        let json_result = serde_json::to_string(&result_vec)?;
+
+        Ok(json_result)
     }
 
     fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
