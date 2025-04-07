@@ -2,6 +2,10 @@ use rusqlite::{Result as SQLResult, Row};
 use serde::{Deserialize, Serialize};
 
 pub mod table_map {
+    use actix_web::web::Payload;
+
+    use crate::handlers::create::CreatePayload;
+
     use super::*;
 
     // Lift struct definition
@@ -39,6 +43,22 @@ pub mod table_map {
 
     pub trait FromRow: Sized {
         fn from_row(row: &Row) -> SQLResult<Self>;
+    }
+
+    pub trait CastRow: Sized {
+        fn cast_rows(payload: CreatePayload) -> Result<Lift, Box<dyn std::error::Error>>;
+    }
+
+    impl CastRow for Lift {
+        fn cast_rows(payload: CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
+            let data = payload.data.unwrap_or_else(|| "No data provided".into());
+            let values = data
+                .as_array()
+                .iter()
+                .map(f)
+            
+            Ok("hello world!".to_string())
+        }
     }
 
     impl FromRow for Lift {
