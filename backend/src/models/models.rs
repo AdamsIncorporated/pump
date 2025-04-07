@@ -1,3 +1,4 @@
+use rusqlite::{Result as SQLResult, Row};
 use serde::{Deserialize, Serialize};
 
 pub mod table_map {
@@ -34,5 +35,48 @@ pub mod table_map {
         pub id: Option<i32>,
         pub created_at: Option<String>,
         pub weight_lbs: f64,
+    }
+
+    pub trait FromRow: Sized {
+        fn from_row(row: &Row) -> SQLResult<Self>;
+    }
+
+    impl FromRow for Lift {
+        fn from_row(row: &Row) -> SQLResult<Self> {
+            Ok(Lift {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                exercise: row.get(2)?,
+                sets: row.get(3)?,
+                reps: row.get(4)?,
+                weight_lbs: row.get(5)?,
+            })
+        }
+    }
+
+    impl FromRow for Weight {
+        fn from_row(row: &Row) -> SQLResult<Self> {
+            Ok(Weight {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                weight_lbs: row.get(2)?,
+            })
+        }
+    }
+
+    impl FromRow for Calories {
+        fn from_row(row: &Row) -> SQLResult<Self> {
+            Ok(Calories {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                carbs: row.get(2)?,
+                protein: row.get(3)?,
+                saturated_fat: row.get(4)?,
+                trans_fat: row.get(5)?,
+                monounsaturated_fat: row.get(6)?,
+                polyunsaturated_fat: row.get(7)?,
+                total_calories: row.get(8)?,
+            })
+        }
     }
 }

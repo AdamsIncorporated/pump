@@ -1,5 +1,7 @@
 use crate::handlers::create::CreatePayload;
+use crate::models::models::table_map::FromRow;
 use rusqlite::{self, Connection, Result};
+use serde::Serialize;
 
 pub struct Database {
     conn: Connection,
@@ -39,23 +41,15 @@ impl Database {
         Ok(total_lines_inserted)
     }
 
-    pub fn read(&self, table_name: &str) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn read<T: FromRow + Serialize>(&self, table_name: &str) -> Result<String, Box<dyn std::error::Error>> {
         let sql = format!("SELECT * FROM {}", table_name);
         let mut stmt = self.conn.prepare(&sql)?;
-        use crate::models::models::table_map::Lift;
 
         let rows_iter = stmt.query_map([], |row| {
-            Ok(Lift {
-                id: row.get(0)?,
-                created_at: row.get(1)?,
-                exercise: row.get(2)?,
-                sets: row.get(3)?,
-                reps: row.get(4)?,
-                weight_lbs: row.get(5)?,
-            })
+            T::from_row(row)
         })?;
 
-        let mut results: Vec<Lift> = Vec::new();
+        let mut results: Vec<T> = Vec::new();
         for row_result in rows_iter {
             results.push(row_result?);
         }
