@@ -1,5 +1,4 @@
 use crate::db::Database;
-use crate::models::models::create_table_map;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use serde::{Deserialize, Serialize};
@@ -34,14 +33,6 @@ pub struct ResponseMessage {
 pub struct CreatePayload {
     pub table_name: Option<SerdeValue>,
     pub data: Option<SerdeValue>,
-}
-
-fn process_payload(payload: CreatePayload) {
-    let table_map = create_table_map();
-
-    if let Some(table_fn) = table_map.get(payload.table_name) {
-        
-    }
 }
 
 impl CreatePayload {

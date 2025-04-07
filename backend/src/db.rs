@@ -1,9 +1,5 @@
 use crate::handlers::create::CreatePayload;
-use crate::models::models::create_table_map;
-use log::info;
-use rusqlite::{self, params_from_iter, Connection, Result, Row, ToSql};
-use serde_json::Value as SerdeValue;
-use std::collections::HashMap;
+use rusqlite::{self, Connection, Result};
 
 pub struct Database {
     conn: Connection,
@@ -43,28 +39,29 @@ impl Database {
         Ok(total_lines_inserted)
     }
 
-    pub fn read(&self, table_name: &str) -> Result<String, Box<dyn Error>> {
-        let table_map = create_table_map();
+    pub fn read(&self, table_name: &str) -> Result<String, Box<dyn std::error::Error>> {
+        let sql = format!("SELECT * FROM {}", table_name);
+        let mut stmt = self.conn.prepare(&sql)?;
+        use crate::models::models::table_map::Lift;
 
-        // Dynamically map to the correct struct based on table name
-        if let Some(table_fn) = table_map.get(table_name) {
-            let sql = format!("SELECT * FROM {}", table_name);
-            let mut stmt = self.conn.prepare(&sql)?;
+        let rows_iter = stmt.query_map([], |row| {
+            Ok(Lift {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                exercise: row.get(2)?,
+                sets: row.get(3)?,
+                reps: row.get(4)?,
+                weight_lbs: row.get(5)?,
+            })
+        })?;
 
-            let rows = stmt.query_map([], |row| {
-                let struct_instance = table_fn(row)?;
-                Ok(serde_json::to_value(struct_instance)?)
-            })?;
-
-            let mut json_rows = Vec::new();
-            for row in rows {
-                json_rows.push(row?);
-            }
-
-            Ok(serde_json::to_string(&json_rows)?)
-        } else {
-            Err(format!("Table '{}' not recognized", table_name).into())
+        let mut results: Vec<Lift> = Vec::new();
+        for row_result in rows_iter {
+            results.push(row_result?);
         }
+
+        let json_string = serde_json::to_string(&results)?;
+        Ok(json_string)
     }
 
     fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
