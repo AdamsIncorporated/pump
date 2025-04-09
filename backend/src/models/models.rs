@@ -1,11 +1,8 @@
 use rusqlite::{Result as SQLResult, Row};
 use serde::{Deserialize, Serialize};
+use serde_json::Value as SerdeValue;
 
 pub mod table_map {
-    use actix_web::web::Payload;
-
-    use crate::handlers::create::CreatePayload;
-
     use super::*;
 
     // Lift struct definition
@@ -45,19 +42,42 @@ pub mod table_map {
         fn from_row(row: &Row) -> SQLResult<Self>;
     }
 
-    pub trait CastRow: Sized {
-        fn cast_rows(payload: CreatePayload) -> Result<Lift, Box<dyn std::error::Error>>;
+    trait CastRowToInsertString {
+        fn cast_rows(payload: SerdeValue, table_name: &str, column_names: &[&str]) -> Result<String, Box<dyn std::error::Error>>;
     }
-
-    impl CastRow for Lift {
-        fn cast_rows(payload: CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
-            let data = payload.data.unwrap_or_else(|| "No data provided".into());
-            let values = data
-                .as_array()
-                .iter()
-                .map(f)
-            
-            Ok("hello world!".to_string())
+    impl CastRowToInsertString for Lift {
+        fn cast_rows(payload: SerdeValue, table_name: &str, column_names: &[&str]) -> Result<String, Box<dyn std::error::Error>> {
+            let data = payload.as_array().ok_or("Payload 'data' is not an array")?;
+    
+            let mut insert_statements = Vec::new();
+    
+            for row in data.iter() {
+                if let SerdeValue::Object(row_obj) = row {
+                    let mut values = Vec::new();
+                    for column in column_names {
+                        if let Some(value) = row_obj.get(*column) {
+                            match value {
+                                SerdeValue::Null => values.push("NULL".to_string()),
+                                SerdeValue::Bool(b) => values.push(b.to_string()),
+                                SerdeValue::Number(n) => values.push(n.to_string()),
+                                SerdeValue::String(s) => values.push(format!("'{}'", s.replace("'", "''"))), // Escape single quotes
+                                SerdeValue::Array(_) | SerdeValue::Object(_) => {
+                                    return Err(format!("Unsupported JSON type for column '{}': {:?}", column, value).into());
+                                }
+                            }
+                        } else {
+                            return Err(format!("Missing column '{}' in row: {:?}", column, row_obj).into());
+                        }
+                    }
+                    let columns_str = column_names.join(", ");
+                    let values_str = values.join(", ");
+                    insert_statements.push(format!("INSERT INTO {} ({}) VALUES ({});", table_name, columns_str, values_str));
+                } else {
+                    return Err("Row is not a JSON object".into());
+                }
+            }
+    
+            Ok(insert_statements.join("\n"))
         }
     }
 
