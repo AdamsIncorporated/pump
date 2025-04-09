@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
 
 pub mod table_map {
+    use crate::handlers::create::CreatePayload;
+
     use super::*;
 
     // Lift struct definition
@@ -43,40 +45,96 @@ pub mod table_map {
     }
 
     trait CastRowToInsertString {
-        fn cast_rows(payload: SerdeValue, table_name: &str, column_names: &[&str]) -> Result<String, Box<dyn std::error::Error>>;
+        fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>>;
     }
+
+    #[derive(Debug)]
+    pub enum PayloadError {
+        MissingField(String),
+        NotAnArray(String),
+        NotAnObject(String),
+        UnsupportedDataType(String, SerdeValue),
+        MissingColumn(String),
+    }
+
+    impl std::fmt::Display for PayloadError {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                PayloadError::MissingField(field) => {
+                    write!(f, "Missing field in payload: {}", field)
+                }
+                PayloadError::NotAnArray(field) => {
+                    write!(f, "Field '{}' is not a JSON array", field)
+                }
+                PayloadError::NotAnObject(msg) => write!(f, "JSON value is not an object: {}", msg),
+                PayloadError::UnsupportedDataType(column, value) => {
+                    write!(
+                        f,
+                        "Unsupported JSON data type for column '{}': {:?}",
+                        column, value
+                    )
+                }
+                PayloadError::MissingColumn(column) => {
+                    write!(f, "Missing column '{}' in row", column)
+                }
+            }
+        }
+    }
+
+    impl std::error::Error for PayloadError {} 
+
     impl CastRowToInsertString for Lift {
-        fn cast_rows(payload: SerdeValue, table_name: &str, column_names: &[&str]) -> Result<String, Box<dyn std::error::Error>> {
-            let data = payload.as_array().ok_or("Payload 'data' is not an array")?;
-    
+        fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
+            let column_names = payload.get_data_keys()?;
+            let table_name = payload.get_table_name()?;
+            let data = payload
+                .data
+                .as_ref()
+                .ok_or(PayloadError::MissingField("data".into()))?
+                .as_array()
+                .ok_or(PayloadError::NotAnArray("data".into()))?;
+
             let mut insert_statements = Vec::new();
-    
+
             for row in data.iter() {
                 if let SerdeValue::Object(row_obj) = row {
                     let mut values = Vec::new();
-                    for column in column_names {
-                        if let Some(value) = row_obj.get(*column) {
+                    for column in &column_names {
+                        if let Some(value) = row_obj.get(column) {
                             match value {
                                 SerdeValue::Null => values.push("NULL".to_string()),
                                 SerdeValue::Bool(b) => values.push(b.to_string()),
                                 SerdeValue::Number(n) => values.push(n.to_string()),
-                                SerdeValue::String(s) => values.push(format!("'{}'", s.replace("'", "''"))), // Escape single quotes
+                                SerdeValue::String(s) => {
+                                    values.push(format!("'{}'", s.replace("'", "''")))
+                                } // Escape single quotes
                                 SerdeValue::Array(_) | SerdeValue::Object(_) => {
-                                    return Err(format!("Unsupported JSON type for column '{}': {:?}", column, value).into());
+                                    return Err(format!(
+                                        "Unsupported JSON type for column '{}': {:?}",
+                                        column, value
+                                    )
+                                    .into());
                                 }
                             }
                         } else {
-                            return Err(format!("Missing column '{}' in row: {:?}", column, row_obj).into());
+                            return Err(format!(
+                                "Missing column '{}' in row: {:?}",
+                                column, row_obj
+                            )
+                            .into());
                         }
                     }
                     let columns_str = column_names.join(", ");
                     let values_str = values.join(", ");
-                    insert_statements.push(format!("INSERT INTO {} ({}) VALUES ({});", table_name, columns_str, values_str));
+                    insert_statements.push(format!(
+                        "INSERT INTO {} ({}) VALUES ({});",
+                        table_name, columns_str, values_str
+                    ));
                 } else {
                     return Err("Row is not a JSON object".into());
                 }
             }
-    
+
             Ok(insert_statements.join("\n"))
         }
     }
