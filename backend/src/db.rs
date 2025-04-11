@@ -1,5 +1,5 @@
-use crate::handlers::create::Payload;
-use crate::models::models::table_map::FromRow;
+use crate::handlers::requests::Payload;
+use crate::models::models::FromRow;
 use rusqlite::{self, Connection, Result};
 use serde::Serialize;
 
