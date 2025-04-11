@@ -1,26 +1,38 @@
 use crate::handlers::errors::handler_errors::PayloadError;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
-
-#[derive(Deserialize)]
-pub struct Payload {
-    pub table_name: Option<SerdeValue>,
+    
+#[derive(Deserialize, Debug)]
+pub struct CreatePayload {
+    pub table_name: Option<String>,
     pub data: Option<SerdeValue>,
 }
 
-impl Payload {
+#[derive(Deserialize, Debug)]
+pub struct DeletePayload {
+    pub table_name: Option<String>,
+    pub ids: Option<Vec<u32>>,
+}
+
+impl DeletePayload {
     pub fn get_table_name(&self) -> Result<&str, PayloadError> {
-        self.table_name
-            .as_ref()
-            .ok_or_else(|| {
-                PayloadError::MissingFieldError("Table name is missing from payload.".to_string())
-            })?
-            .as_str()
-            .ok_or_else(|| {
-                PayloadError::JsonParseError(
-                    "Failed to convert table name to a string.".to_string(),
-                )
-            })
+        match &self.table_name {
+            Some(table_name) => Ok(table_name),
+            None => Err(PayloadError::JsonParseError(
+                "Failed to parse json create payload table name.".into(),
+            )),
+        }
+    }
+}
+
+impl CreatePayload {
+    pub fn get_table_name(&self) -> Result<&str, PayloadError> {
+        match &self.table_name {
+            Some(table_name) => Ok(table_name),
+            None => Err(PayloadError::JsonParseError(
+                "Failed to parse json create payload table name.".into(),
+            )),
+        }
     }
 
     pub fn get_data_keys(&self) -> Result<Vec<String>, PayloadError> {

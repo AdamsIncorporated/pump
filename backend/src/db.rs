@@ -1,4 +1,4 @@
-use crate::handlers::requests::Payload;
+use crate::handlers::requests::{CreatePayload, DeletePayload};
 use crate::models::models::FromRow;
 use rusqlite::{self, Connection, Result};
 use serde::Serialize;
@@ -39,11 +39,13 @@ impl Database {
         Ok(json_string)
     }
 
-    fn update(&mut self, payload: &Payload) -> Result<usize, Box<dyn std::error::Error>> {
+    pub fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
         Ok(1)
     }
 
-    fn delete(&mut self, payload: &Payload) -> Result<usize, Box<dyn std::error::Error>> {
+    pub fn delete(&mut self, payload: &DeletePayload) -> Result<usize, Box<dyn std::error::Error>> {
+        let table_name = payload.get_table_name()?;
+        
         Ok(1)
     }
 }

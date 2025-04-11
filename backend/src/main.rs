@@ -3,6 +3,7 @@ use actix_web::{App, HttpServer};
 pub mod handlers;
 pub mod models;
 use handlers::endpoints::create::create;
+use handlers::endpoints::delete::delete;
 use log::info;
 pub mod cors;
 pub mod db;
@@ -18,6 +19,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::default())
             .service(create)
+            .service(delete)
     })
     .bind("127.0.0.1:5000")?
     .run()

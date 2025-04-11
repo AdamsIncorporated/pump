@@ -1,7 +1,7 @@
 use rusqlite::{Result as SQLResult, Row};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
-use crate::handlers::requests::Payload;
+use crate::handlers::requests::CreatePayload;
 
 // Lift struct definition
 #[derive(Serialize, Deserialize, Debug)]
@@ -41,7 +41,7 @@ pub trait FromRow: Sized {
 }
 
 pub trait CastRowToInsertString {
-    fn cast_rows(payload: &Payload) -> Result<String, Box<dyn std::error::Error>>;
+    fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug)]
@@ -80,7 +80,7 @@ impl std::fmt::Display for PayloadError {
 impl std::error::Error for PayloadError {}
 
 impl CastRowToInsertString for Lift {
-    fn cast_rows(payload: &Payload) -> Result<String, Box<dyn std::error::Error>> {
+    fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
         let column_names = payload.get_data_keys()?;
         let table_name = payload.get_table_name()?;
         let data = payload

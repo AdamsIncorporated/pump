@@ -1,11 +1,11 @@
-use crate::handlers::requests::{Payload, ResponseMessage};
+use crate::handlers::requests::{CreatePayload, ResponseMessage};
 use crate::models::models::CastRowToInsertString;
 use crate::{db::Database, models::models::Lift};
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
 #[post("/create")]
-pub async fn create(payload: web::Json<Payload>) -> impl Responder {
+pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     // check if payload is null
     if payload.table_name.is_none() || payload.data.is_none() {
         return HttpResponse::BadRequest()
