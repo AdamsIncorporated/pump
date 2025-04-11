@@ -23,6 +23,13 @@ impl DeletePayload {
             )),
         }
     }
+
+    pub fn get_delete_ids(&self) -> Result<&Vec<u32>, PayloadError> {
+       match &self.ids {
+        Some(ids) => Ok(ids),
+        None => Err(PayloadError::JsonParseError("Failed to parse ids from delete payload".into()))
+       } 
+    }
 }
 
 impl CreatePayload {

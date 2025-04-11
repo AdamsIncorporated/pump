@@ -1,12 +1,12 @@
-use crate::handlers::requests::{CreatePayload, ResponseMessage};
+use crate::handlers::requests::{DeletePayload, ResponseMessage};
 use crate::db::Database;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
 #[post("/delete")]
-pub async fn delete(payload: web::Json<CreatePayload>) -> impl Responder {
+pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
     // check if payload is null
-    if payload.table_name.is_none() || payload.data.is_none() {
+    if payload.table_name.is_none() {
         return HttpResponse::BadRequest()
             .json("Payload must contain both 'table_name' and 'data' keys.");
     }
@@ -19,6 +19,21 @@ pub async fn delete(payload: web::Json<CreatePayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
+
+    let table_name = match payload.get_table_name() {
+        Ok(table_name) => table_name,
+        Err(err) => {
+            return HttpResponse::InternalServerError().json("Failed to table name parsed from payload.")
+        }
+    };
+    let ids = match payload.get_delete_ids() {
+        Ok(ids) => ids,
+        Err(err) => {
+            return HttpResponse::InternalServerError().json("Failed to table row id/s parsed from payload.")
+        }
+    };
+    let sql = format!("DELETE FROM {} WHERE ID = {}", table_name, ids);
+
 
     // Insert a new record into the database
     match db.delete(&sql) {
