@@ -1,28 +1,12 @@
-use crate::{db::Database, models::{self, models::table_map::CastRowToInsertString}};
+use crate::{
+    db::Database,
+    models::{self, models::table_map::CastRowToInsertString},
+};
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
-use std::fmt;
-
-#[derive(Debug)]
-pub enum PayloadError {
-    JsonParseError(String),
-    MissingFieldError(String),
-}
-
-impl fmt::Display for PayloadError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            PayloadError::JsonParseError(msg) => write!(f, "JSON Parse Error: {}", msg),
-            PayloadError::MissingFieldError(msg) => {
-                write!(f, "Missing Field Error: {}", msg)
-            }
-        }
-    }
-}
-
-impl std::error::Error for PayloadError {}
+use crate::handlers::errors::handler_errors::PayloadError;
 
 #[derive(Serialize)]
 pub struct ResponseMessage {
@@ -40,9 +24,7 @@ impl Payload {
         self.table_name
             .as_ref()
             .ok_or_else(|| {
-                PayloadError::MissingFieldError(
-                    "Table name is missing from payload.".to_string(),
-                )
+                PayloadError::MissingFieldError("Table name is missing from payload.".to_string())
             })?
             .as_str()
             .ok_or_else(|| {
@@ -60,9 +42,7 @@ impl Payload {
             .and_then(|obj| obj.as_object())
             .map(|obj| obj.keys().cloned().collect())
             .ok_or_else(|| {
-                PayloadError::JsonParseError(
-                    "Failed to get keys from create payload.".to_string(),
-                )
+                PayloadError::JsonParseError("Failed to get keys from create payload.".to_string())
             })
     }
 }
