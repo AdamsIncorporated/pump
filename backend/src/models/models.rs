@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as SerdeValue;
 
 pub mod table_map {
-    use crate::handlers::create::CreatePayload;
+    use crate::handlers::create::Payload;
 
     use super::*;
 
@@ -44,8 +44,8 @@ pub mod table_map {
         fn from_row(row: &Row) -> SQLResult<Self>;
     }
 
-    trait CastRowToInsertString {
-        fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>>;
+    pub trait CastRowToInsertString {
+        fn cast_rows(payload: &Payload) -> Result<String, Box<dyn std::error::Error>>;
     }
 
     #[derive(Debug)]
@@ -84,7 +84,7 @@ pub mod table_map {
     impl std::error::Error for PayloadError {} 
 
     impl CastRowToInsertString for Lift {
-        fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
+        fn cast_rows(payload: &Payload) -> Result<String, Box<dyn std::error::Error>> {
             let column_names = payload.get_data_keys()?;
             let table_name = payload.get_table_name()?;
             let data = payload

@@ -1,4 +1,4 @@
-use crate::db::Database;
+use crate::{db::Database, models::{self, models::table_map::CastRowToInsertString}};
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use serde::{Deserialize, Serialize};
@@ -6,23 +6,23 @@ use serde_json::Value as SerdeValue;
 use std::fmt;
 
 #[derive(Debug)]
-pub enum CreatePayloadKeyError {
+pub enum PayloadError {
     JsonParseError(String),
     MissingFieldError(String),
 }
 
-impl fmt::Display for CreatePayloadKeyError {
+impl fmt::Display for PayloadError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            CreatePayloadKeyError::JsonParseError(msg) => write!(f, "JSON Parse Error: {}", msg),
-            CreatePayloadKeyError::MissingFieldError(msg) => {
+            PayloadError::JsonParseError(msg) => write!(f, "JSON Parse Error: {}", msg),
+            PayloadError::MissingFieldError(msg) => {
                 write!(f, "Missing Field Error: {}", msg)
             }
         }
     }
 }
 
-impl std::error::Error for CreatePayloadKeyError {}
+impl std::error::Error for PayloadError {}
 
 #[derive(Serialize)]
 pub struct ResponseMessage {
@@ -30,29 +30,29 @@ pub struct ResponseMessage {
 }
 
 #[derive(Deserialize)]
-pub struct CreatePayload {
+pub struct Payload {
     pub table_name: Option<SerdeValue>,
     pub data: Option<SerdeValue>,
 }
 
-impl CreatePayload {
-    pub fn get_table_name(&self) -> Result<&str, CreatePayloadKeyError> {
+impl Payload {
+    pub fn get_table_name(&self) -> Result<&str, PayloadError> {
         self.table_name
             .as_ref()
             .ok_or_else(|| {
-                CreatePayloadKeyError::MissingFieldError(
+                PayloadError::MissingFieldError(
                     "Table name is missing from payload.".to_string(),
                 )
             })?
             .as_str()
             .ok_or_else(|| {
-                CreatePayloadKeyError::JsonParseError(
+                PayloadError::JsonParseError(
                     "Failed to convert table name to a string.".to_string(),
                 )
             })
     }
 
-    pub fn get_data_keys(&self) -> Result<Vec<String>, CreatePayloadKeyError> {
+    pub fn get_data_keys(&self) -> Result<Vec<String>, PayloadError> {
         self.data
             .as_ref()
             .and_then(|data| data.as_array())
@@ -60,7 +60,7 @@ impl CreatePayload {
             .and_then(|obj| obj.as_object())
             .map(|obj| obj.keys().cloned().collect())
             .ok_or_else(|| {
-                CreatePayloadKeyError::JsonParseError(
+                PayloadError::JsonParseError(
                     "Failed to get keys from create payload.".to_string(),
                 )
             })
@@ -68,7 +68,7 @@ impl CreatePayload {
 }
 
 #[post("/create")]
-pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
+pub async fn create(payload: web::Json<Payload>) -> impl Responder {
     // check if payload is null
     if payload.table_name.is_none() || payload.data.is_none() {
         return HttpResponse::BadRequest()
@@ -84,8 +84,10 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
         }
     };
 
+    let sql = models::models::table_map::Lift::cast_rows(&payload).unwrap();
+
     // Insert a new record into the database
-    match db.create(&payload) {
+    match db.create(&sql) {
         Ok(_) => {
             let response = ResponseMessage {
                 message: "Lift successfully inserted into the database.".into(),
