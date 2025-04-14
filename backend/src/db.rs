@@ -43,9 +43,7 @@ impl Database {
         Ok(1)
     }
 
-    pub fn delete(&mut self, payload: &DeletePayload) -> Result<usize, Box<dyn std::error::Error>> {
-        let table_name = payload.get_table_name()?;
-        
+    pub fn delete(&mut self, sql: &String) -> Result<usize, Box<dyn std::error::Error>> {
         Ok(1)
     }
 }

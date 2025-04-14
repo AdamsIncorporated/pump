@@ -22,17 +22,23 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
 
     let table_name = match payload.get_table_name() {
         Ok(table_name) => table_name,
-        Err(err) => {
+        Err(_) => {
             return HttpResponse::InternalServerError().json("Failed to table name parsed from payload.")
         }
     };
     let ids = match payload.get_delete_ids() {
         Ok(ids) => ids,
-        Err(err) => {
+        Err(_) => {
             return HttpResponse::InternalServerError().json("Failed to table row id/s parsed from payload.")
         }
     };
-    let sql = format!("DELETE FROM {} WHERE ID = {}", table_name, ids);
+    let ids_str = ids
+        .iter()
+        .map(|id| id.to_string()) 
+        .collect::<Vec<String>>()
+        .join(", ");
+
+    let sql = format!("DELETE FROM {} WHERE ID IN ({})", table_name, ids_str);
 
 
     // Insert a new record into the database
