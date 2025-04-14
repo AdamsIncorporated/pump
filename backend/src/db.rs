@@ -14,8 +14,7 @@ impl Database {
 
     pub fn execute_sql(&mut self, sql: &String, params: &[&dyn ToSql]) -> Result<usize, Box<dyn std::error::Error>> {
         let tx = self.conn.transaction()?;
-        let mut stmt = tx.prepare(sql)?;
-        let rows_affected = stmt.execute(params)?;
+        let rows_affected = tx.execute(sql, params)?;
         tx.commit();
         Ok(rows_affected)
     }
