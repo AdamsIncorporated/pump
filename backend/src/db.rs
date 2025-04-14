@@ -1,39 +1,22 @@
-use rusqlite::{Connection, Error, Params};
-pub type DatabaseResult<T> = std::result::Result<T, Error>;
+use rusqlite::{Connection, ToSql};
 
 pub struct Database {
     conn: Connection,
 }
 
 impl Database {
-    pub fn new(path: &str) -> DatabaseResult<Self> {
-        Connection::open(path)
-            .map(|conn| Database { conn })
-            .map_err(rusqlite::Error)
+    pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        match Connection::open("./data/main.db") {
+            Ok(conn) => Ok(Database { conn }),
+            Err(e) => Err(Box::new(e))
+        }
     }
 
-    pub fn execute_sql<P: Params>(
-        &mut self,
-        sql: &String,
-        params: &mut [P] ,
-    ) -> DatabaseResult<usize> {
-        let transaction = match self.conn.transaction() {
-            Ok(tx) => tx,
-            Err(error) => return Err(error),
-        };
-
-        let mut stmt = transaction.prepare(sql)?;
-        stmt.execute(params);
-
-        match result {
-            Ok(rows_affected) => {
-                transaction.commit()?;
-                Ok(rows_affected)
-            }
-            Err(error) => {
-                transaction.rollback()?;
-                Err(error)
-            }
-        }
+    pub fn execute_sql(&mut self, sql: &String, params: &[&dyn ToSql]) -> Result<usize, Box<dyn std::error::Error>> {
+        let tx = self.conn.transaction()?;
+        let mut stmt = tx.prepare(sql)?;
+        let rows_affected = stmt.execute(params)?;
+        tx.commit();
+        Ok(rows_affected)
     }
 }

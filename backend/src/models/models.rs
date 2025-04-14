@@ -82,7 +82,7 @@ impl std::error::Error for PayloadError {}
 impl CastRowToInsertString for Lift {
     fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>> {
         let column_names = payload.get_data_keys()?;
-        let table_name = payload.get_table_name()?;
+        let table_name = payload.to_owned().table_name.unwrap();
         let data = payload
             .data
             .as_ref()

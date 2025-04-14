@@ -14,7 +14,7 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
         }
     };
 
-    // create a new instanc eof database
+    // create a new instanc eof databawse
     let mut db = match Database::new() {
         Ok(db) => db,
         Err(err) => {
@@ -25,7 +25,7 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
     let sql = format!("SELECT * FROM {}", table_name);
 
     // Insert a new record into the database
-    match db.execute_sql(&sql) {
+    match db.execute_sql(&sql, []) {
         Ok(_) => {
             let response = ResponseMessage {
                 message: format!("{} into the database.", table_name),
@@ -33,14 +33,12 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
             HttpResponse::Ok().json(response)
         }
         Err(err) => {
-            error!(
-                "{}",
-                format!(
-                    "Failed to read all rows from table: {}, Error: {}",
-                    table_name, err
-                )
+            let message = format!(
+                "Failed to read all rows from table: {}, Error: {}",
+                table_name, err
             );
-            return HttpResponse::InternalServerError().json("Failed to insert lift.");
+            error!("{}", message);
+            return HttpResponse::InternalServerError().json(message);
         }
     }
 }
