@@ -1,49 +1,103 @@
-use crate::handlers::requests::{CreatePayload, DeletePayload};
-use crate::models::models::FromRow;
-use rusqlite::{self, Connection, Result};
-use serde::Serialize;
+use rusqlite::{Connection, Error as RusqliteError, Params};
+use std::fmt;
+
+#[derive(Debug)]
+pub enum DatabaseError {
+    DatabaseOpenError(RusqliteError),
+    TransactionStartError(RusqliteError),
+    PrepareStatementError(RusqliteError),
+    ExecuteSqlError(RusqliteError),
+    CommitTransactionError(RusqliteError),
+    RollbackTransactionError(RusqliteError),
+    SqlQueryError { sql: String, source: RusqliteError },
+    ConfigurationError(String),
+    NotFoundError(String),
+    InvalidInput { field: String, details: String },
+}
+
+impl fmt::Display for DatabaseError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DatabaseError::DatabaseOpenError(e) => write!(f, "Failed to open database: {}", e),
+            DatabaseError::TransactionStartError(e) => {
+                write!(f, "Failed to start transaction: {}", e)
+            }
+            DatabaseError::PrepareStatementError(e) => {
+                write!(f, "Failed to prepare SQL statement: {}", e)
+            }
+            DatabaseError::ExecuteSqlError(e) => write!(f, "Failed to execute SQL: {}", e),
+            DatabaseError::CommitTransactionError(e) => {
+                write!(f, "Failed to commit transaction: {}", e)
+            }
+            DatabaseError::RollbackTransactionError(e) => {
+                write!(f, "Failed to rollback transaction: {}", e)
+            }
+            DatabaseError::SqlQueryError { sql, source } => {
+                write!(f, "SQL query '{}' failed: {}", sql, source)
+            }
+            DatabaseError::ConfigurationError(msg) => write!(f, "Configuration error: {}", msg),
+            DatabaseError::NotFoundError(msg) => write!(f, "Not found: {}", msg),
+            DatabaseError::InvalidInput { field, details } => {
+                write!(f, "Invalid input for field '{}': {}", field, details)
+            }
+        }
+    }
+}
+
+// Implement the Error trait for CustomError
+impl std::error::Error for DatabaseError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            DatabaseError::DatabaseOpenError(e) => Some(e),
+            DatabaseError::TransactionStartError(e) => Some(e),
+            DatabaseError::PrepareStatementError(e) => Some(e),
+            DatabaseError::ExecuteSqlError(e) => Some(e),
+            DatabaseError::CommitTransactionError(e) => Some(e),
+            DatabaseError::RollbackTransactionError(e) => Some(e),
+            DatabaseError::SqlQueryError { source, .. } => Some(source),
+            _ => None,
+        }
+    }
+}
+
+pub type Result<T> = std::result::Result<T, DatabaseError>;
 
 pub struct Database {
     conn: Connection,
 }
 
-type DatabaseResult = Result<usize, Box<dyn std::error::Error>>;
-
 impl Database {
-    pub fn new() -> Result<Database> {
-        let conn = Connection::open("./data/main.db")?;
-        Ok(Database { conn })
+    pub fn new(path: &str) -> Result<Self> {
+        Connection::open(path)
+            .map(|conn| Database { conn })
+            .map_err(DatabaseError::DatabaseOpenError)
     }
 
-    pub fn create(&mut self, sql: &String) -> DatabaseResult {
-        let transaction = self.conn.transaction()?;
-        let mut stmt = transaction.prepare(&sql)?;
-        let result = stmt.execute([])?;
-        Ok(result)
-    }
+    pub fn execute_sql<P: Params>(&mut self, sql: &String, params: Option<Vec<P>>) -> Result<usize> {
+        let transaction: rusqlite::Transaction<'_> = match self.conn.transaction() {
+            Ok(tx) => tx,
+            Err(e) => return Err(DatabaseError::TransactionStartError(e)),
+        };
 
-    pub fn read<T: FromRow + Serialize>(&self, table_name: &str) -> Result<String, Box<dyn std::error::Error>> {
-        let sql = format!("SELECT * FROM {}", table_name);
-        let mut stmt = self.conn.prepare(&sql)?;
+        let mut stmt = match &transaction.prepare(&sql) {
+            Ok(s) => s,
+            Err(e) => {
+                transaction.rollback();
+                return Err(DatabaseError::PrepareStatementError(e));
+            }
+        };
 
-        let rows_iter = stmt.query_map([], |row| {
-            T::from_row(row)
-        })?;
+        let result = match stmt.execute([]) {
+            Ok(r) => r,
+            Err(e) => {
+                transaction.rollback();
+                return Err(DatabaseError::ExecuteSqlError(e));
+            }
+        };
 
-        let mut results: Vec<T> = Vec::new();
-        for row_result in rows_iter {
-            results.push(row_result?);
+        match transaction.commit() {
+            Ok(_) => Ok(result),
+            Err(e) => Err(DatabaseError::CommitTransactionError(e)),
         }
-
-        let json_string = serde_json::to_string(&results)?;
-        Ok(json_string)
-    }
-
-    pub fn update(&mut self, payload: &CreatePayload) -> Result<usize, Box<dyn std::error::Error>> {
-        Ok(1)
-    }
-
-    pub fn delete(&mut self, sql: &String) -> Result<usize, Box<dyn std::error::Error>> {
-        Ok(1)
     }
 }

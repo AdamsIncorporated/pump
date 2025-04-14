@@ -1,15 +1,18 @@
-use crate::handlers::requests::{DeletePayload, ResponseMessage};
 use crate::db::Database;
+use crate::handlers::requests::{DeletePayload, ResponseMessage};
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
 #[post("/delete")]
 pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
-    // check if payload is null
-    if payload.table_name.is_none() {
-        return HttpResponse::BadRequest()
-            .json("Payload must contain both 'table_name' and 'data' keys.");
-    }
+    // Check if table name payload key is null
+    let table_name = match &payload.table_name {
+        Some(table_name) => table_name,
+        None => {
+            error!("Payload must contain both 'table_name' key.");
+            return HttpResponse::BadRequest().json("Payload must contain both 'table_name' key.");
+        }
+    };
 
     // create a new instanc eof database
     let mut db = match Database::new() {
@@ -20,29 +23,25 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
         }
     };
 
-    let table_name = match payload.get_table_name() {
-        Ok(table_name) => table_name,
-        Err(_) => {
-            return HttpResponse::InternalServerError().json("Failed to table name parsed from payload.")
-        }
-    };
+
+    // Get list of ids in a string tuple format
     let ids = match payload.get_delete_ids() {
         Ok(ids) => ids,
         Err(_) => {
-            return HttpResponse::InternalServerError().json("Failed to table row id/s parsed from payload.")
+            return HttpResponse::InternalServerError()
+                .json("Failed to table row id/s parsed from payload.")
         }
     };
     let ids_str = ids
         .iter()
-        .map(|id| id.to_string()) 
+        .map(|id| id.to_string())
         .collect::<Vec<String>>()
         .join(", ");
 
     let sql = format!("DELETE FROM {} WHERE ID IN ({})", table_name, ids_str);
 
-
-    // Insert a new record into the database
-    match db.delete(&sql) {
+    // Execute sql
+    match db.execute_sql(&sql) {
         Ok(_) => {
             let response = ResponseMessage {
                 message: "Lift successfully inserted into the database.".into(),

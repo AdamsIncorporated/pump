@@ -1,11 +1,12 @@
 use crate::handlers::requests::{CreatePayload, ResponseMessage};
 use crate::models::models::CastRowToInsertString;
-use crate::{db::Database, models::models::Lift};
+use crate::db::Database;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
+use serde::Serialize;
 
 #[post("/create")]
-pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
+pub async fn create<T: CastRowToInsertString + Serialize>(payload: web::Json<CreatePayload>) -> impl Responder {
     // check if payload is null
     if payload.table_name.is_none() || payload.data.is_none() {
         return HttpResponse::BadRequest()
@@ -21,10 +22,10 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
         }
     };
 
-    let sql = Lift::cast_rows(&payload).unwrap();
+    let sql = T::cast_rows(&payload).unwrap();
 
     // Insert a new record into the database
-    match db.create(&sql) {
+    match db.execute_sql(&sql) {
         Ok(_) => {
             let response = ResponseMessage {
                 message: "Lift successfully inserted into the database.".into(),
