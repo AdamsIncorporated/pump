@@ -23,25 +23,27 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
         }
     };
 
-
     // Get list of ids in a string tuple format
-    let ids = match payload.get_delete_ids() {
-        Ok(ids) => ids,
+    let ids: Vec<String> = match payload.get_delete_ids() {
+        Ok(ids) => ids.iter().map(|id| id.to_string()).collect(),
         Err(_) => {
             return HttpResponse::InternalServerError()
                 .json("Failed to table row id/s parsed from payload.")
         }
     };
-    let ids_str = ids
-        .iter()
-        .map(|id| id.to_string())
-        .collect::<Vec<String>>()
-        .join(", ");
+    let id_placeholders = ids.iter().map(|_| "?, ".to_string()).collect::<String>();
 
-    let sql = format!("DELETE FROM {} WHERE ID IN ({})", table_name, ids_str);
+    let sql = format!("DELETE FROM ? WHERE ID IN ({})", id_placeholders);
+    let mut params: Vec<&dyn rusqlite::types::ToSql> = Vec::new();
+
+    params.push(table_name);
+
+    for id in &ids {
+        params.push(id);
+    }
 
     // Execute sql
-    match db.execute_sql(&sql) {
+    match db.execute_sql(&sql, &params) {
         Ok(_) => {
             let response = ResponseMessage {
                 message: "Lift successfully inserted into the database.".into(),

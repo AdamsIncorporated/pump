@@ -22,10 +22,9 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
-    let sql = format!("SELECT * FROM {}", table_name);
+    let sql = "SELECT * FROM ?".into();
 
-    // Insert a new record into the database
-    match db.execute_sql(&sql, []) {
+    match db.execute_sql(&sql, &[table_name]) {
         Ok(_) => {
             let response = ResponseMessage {
                 message: format!("{} into the database.", table_name),
