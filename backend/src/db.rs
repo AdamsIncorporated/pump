@@ -30,13 +30,16 @@ impl Database {
         Ok(rows_affected)
     }
 
-    pub fn read_rows<T: Serialize + for<'de> Deserialize<'de> + Debug + PartialEq + DeserializeOwned>(
+    pub fn read_rows<
+        D: DeserializeOwned,
+    >(
         &mut self,
         sql: &String,
         params: &[&dyn ToSql],
-    ) -> Result<DeserRows<'_, T>, Box<dyn std::error::Error>> {
-        let statement = self.conn.prepare(sql)?;
-        let rows = serde_rusqlite::from_rows::<T>(statement.query(params)?);
-        Ok(rows)
+    ) -> Result<Vec<D>, Box<dyn std::error::Error>> {
+        let mut stmt = self.conn.prepare(sql)?;
+        let rows = stmt.query(params)?;
+        let results: Vec<D> = from_rows::<D>(rows).collect::<Result<_, _>>()?;
+        Ok(results)
     }
 }
