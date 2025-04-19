@@ -28,6 +28,26 @@ pub struct ReadPayload {
 }
 
 #[derive(Deserialize, Debug, Serialize)]
+pub struct UpdatePayload {
+    pub table_name: Option<String>,
+    pub data: Option<SerdeValue>
+}
+
+impl UpdatePayload {
+    pub fn get_data_keys(&self) -> Result<Vec<String>, PayloadError> {
+        self.data
+            .as_ref()
+            .and_then(|data| data.as_array())
+            .and_then(|arr| arr.first())
+            .and_then(|obj| obj.as_object())
+            .map(|obj| obj.keys().cloned().collect())
+            .ok_or_else(|| {
+                PayloadError::JsonParseError("Failed to get keys from create payload.".to_string())
+            })
+    }
+}
+
+#[derive(Deserialize, Debug, Serialize)]
 pub struct DeletePayload {
     pub table_name: Option<String>,
     pub ids: Option<Vec<u32>>,

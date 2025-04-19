@@ -1,5 +1,5 @@
 use crate::db::Database;
-use crate::handlers::requests::ReadPayload;
+use crate::handlers::payload::ReadPayload;
 use crate::models::models::DataVariant;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;

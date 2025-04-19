@@ -1,10 +1,11 @@
-use crate::handlers::requests::CreatePayload;
+use crate::handlers::payload::CreatePayload;
 use crate::db::Database;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
+use crate::models::models::DataVariant;
 
 #[post("/create")]
-pub async fn create<T>(payload: web::Json<CreatePayload>) -> impl Responder {
+pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     // check if payload is null
     if payload.table_name.is_none() || payload.data.is_none() {
         return HttpResponse::BadRequest()
@@ -20,7 +21,9 @@ pub async fn create<T>(payload: web::Json<CreatePayload>) -> impl Responder {
         }
     };
 
-    let rows = Vec<T> = payload.data.
+    let rows = payload.data
+        .iter()
+        .collect();
 
     // Insert a new record into the database
     match db.execute_sql(&sql, &[]) {

@@ -1,3 +1,3 @@
 pub mod errors;
-pub mod requests;
+pub mod payload;
 pub mod endpoints;

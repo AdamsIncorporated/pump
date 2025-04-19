@@ -1,5 +1,5 @@
 use crate::db::Database;
-use crate::handlers::requests::DeletePayload;
+use crate::handlers::payload::DeletePayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 

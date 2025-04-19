@@ -1,8 +1,7 @@
 use log::error;
 use rusqlite::{Connection, ToSql};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use serde_rusqlite::{from_rows, DeserRows};
-use std::fmt::Debug;
+use serde::de::DeserializeOwned;
+use serde_rusqlite::from_rows;
 
 pub struct Database {
     conn: Connection,
