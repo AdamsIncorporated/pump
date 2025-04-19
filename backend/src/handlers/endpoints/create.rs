@@ -4,7 +4,7 @@ use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
 #[post("/create")]
-pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
+pub async fn create<T>(payload: web::Json<CreatePayload>) -> impl Responder {
     // check if payload is null
     if payload.table_name.is_none() || payload.data.is_none() {
         return HttpResponse::BadRequest()
@@ -20,7 +20,7 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
         }
     };
 
-    let sql = T::cast_rows(&payload).unwrap();
+    let rows = Vec<T> = payload.data.
 
     // Insert a new record into the database
     match db.execute_sql(&sql, &[]) {

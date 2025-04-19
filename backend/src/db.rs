@@ -1,7 +1,8 @@
 use log::error;
 use rusqlite::{Connection, ToSql};
-use serde::de::DeserializeOwned;
-use serde_rusqlite::from_rows;
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde_rusqlite::{from_rows, DeserRows};
+use std::fmt::Debug;
 
 pub struct Database {
     conn: Connection,
@@ -29,22 +30,13 @@ impl Database {
         Ok(rows_affected)
     }
 
-    pub fn read_rows<T: DeserializeOwned>(
+    pub fn read_rows<T: Serialize + for<'de> Deserialize<'de> + Debug + PartialEq + DeserializeOwned>(
         &mut self,
         sql: &String,
         params: &[&dyn ToSql],
-    ) -> Result<Vec<T>, Box<dyn std::error::Error>> {
-        let stmt = self.conn.prepare(sql)?;
-        let mut results = Vec::new();
-        let rows = stmt.query_map(params, |row| Ok(serde_rusqlite::from_row::<T>(row)))?;
-
-        while let row = rows.next() {
-            match serde_rusqlite::from_row::<T>(row) {
-                Ok(item) => results.push(item),
-                Err(e) => return Err(e.into()), // Or handle the error as needed
-            }
-        }
-
+    ) -> Result<DeserRows<'_, T>, Box<dyn std::error::Error>> {
+        let statement = self.conn.prepare(sql)?;
+        let rows = serde_rusqlite::from_rows::<T>(statement.query(params)?);
         Ok(rows)
     }
 }
