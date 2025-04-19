@@ -1,5 +1,5 @@
 use crate::db::Database;
-use crate::handlers::requests::{DeletePayload, ResponseMessage};
+use crate::handlers::requests::DeletePayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
@@ -44,12 +44,7 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
 
     // Execute sql
     match db.execute_sql(&sql, &params) {
-        Ok(_) => {
-            let response = ResponseMessage {
-                message: "Lift successfully inserted into the database.".into(),
-            };
-            HttpResponse::Ok().json(response)
-        }
+        Ok(_) => HttpResponse::Ok().json("Lift successfully inserted into the database."),
         Err(err) => {
             error!("Failed to insert a lift into the database: {}", err);
             return HttpResponse::InternalServerError().json("Failed to insert lift.");

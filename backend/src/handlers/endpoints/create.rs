@@ -1,4 +1,4 @@
-use crate::handlers::requests::{CreatePayload, ResponseMessage};
+use crate::handlers::requests::CreatePayload;
 use crate::db::Database;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
@@ -25,10 +25,7 @@ pub async fn create<T>(payload: web::Json<CreatePayload>) -> impl Responder {
     // Insert a new record into the database
     match db.execute_sql(&sql, &[]) {
         Ok(_) => {
-            let response = ResponseMessage {
-                message: "Lift successfully inserted into the database.".into(),
-            };
-            HttpResponse::Ok().json(response)
+            HttpResponse::Ok().json("Lift successfully inserted into the database.")
         }
         Err(err) => {
             error!("Failed to insert a lift into the database: {}", err);

@@ -1,7 +1,4 @@
-use rusqlite::{Result as SQLResult, Row};
 use serde::{Deserialize, Serialize};
-use serde_json::Value as SerdeValue;
-use crate::handlers::requests::CreatePayload;
 
 // Lift struct definition
 #[derive(Serialize, Deserialize, Debug)]
@@ -36,84 +33,10 @@ pub struct Weight {
     pub weight_lbs: f64,
 }
 
-pub trait FromRow: Sized {
-    fn from_row(row: &Row) -> SQLResult<Self>;
-}
-
-pub trait CastRowToInsertString {
-    fn cast_rows(payload: &CreatePayload) -> Result<String, Box<dyn std::error::Error>>;
-}
-
-#[derive(Debug)]
-pub enum PayloadError {
-    MissingField(String),
-    NotAnArray(String),
-    NotAnObject(String),
-    UnsupportedDataType(String, SerdeValue),
-    MissingColumn(String),
-}
-
-impl std::fmt::Display for PayloadError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PayloadError::MissingField(field) => {
-                write!(f, "Missing field in payload: {}", field)
-            }
-            PayloadError::NotAnArray(field) => {
-                write!(f, "Field '{}' is not a JSON array", field)
-            }
-            PayloadError::NotAnObject(msg) => write!(f, "JSON value is not an object: {}", msg),
-            PayloadError::UnsupportedDataType(column, value) => {
-                write!(
-                    f,
-                    "Unsupported JSON data type for column '{}': {:?}",
-                    column, value
-                )
-            }
-            PayloadError::MissingColumn(column) => {
-                write!(f, "Missing column '{}' in row", column)
-            }
-        }
-    }
-}
-
-impl std::error::Error for PayloadError {}
-
-impl FromRow for Lift {
-    fn from_row(row: &Row) -> SQLResult<Self> {
-        Ok(Lift {
-            id: row.get(0)?,
-            created_at: row.get(1)?,
-            exercise: row.get(2)?,
-            sets: row.get(3)?,
-            reps: row.get(4)?,
-            weight_lbs: row.get(5)?,
-        })
-    }
-}
-
-impl FromRow for Weight {
-    fn from_row(row: &Row) -> SQLResult<Self> {
-        Ok(Weight {
-            id: row.get(0)?,
-            created_at: row.get(1)?,
-            weight_lbs: row.get(2)?,
-        })
-    }
-}
-
-impl FromRow for Calories {
-    fn from_row(row: &Row) -> SQLResult<Self> {
-        Ok(Calories {
-            id: row.get(0)?,
-            created_at: row.get(1)?,
-            carbs: row.get(2)?,
-            protein: row.get(3)?,
-            saturated_fat: row.get(4)?,
-            trans_fat: row.get(5)?,
-            monounsaturated_fat: row.get(6)?,
-            polyunsaturated_fat: row.get(7)?,
-            total_calories: row.get(8)?,
-        })
-    }
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type")] // optional: adds a "type" discriminator to each JSON object
+pub enum DataVariant {
+    Lift(Lift),
+    Calories(Calories),
+    Weight(Weight),
 }

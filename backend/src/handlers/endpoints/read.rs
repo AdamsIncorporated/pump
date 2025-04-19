@@ -1,12 +1,13 @@
 use crate::db::Database;
-use crate::handlers::requests::{ReadPayload, ResponseMessage};
+use crate::handlers::requests::ReadPayload;
+use crate::models::models::DataVariant;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
 #[post("/read")]
 pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
     // Check if table name payload key is null
-    let table_name= match &payload.table_name {
+    let table_name = match &payload.table_name {
         Some(table_name) => table_name,
         None => {
             error!("Payload must contain both 'table_name' key.");
@@ -23,21 +24,16 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
         }
     };
     let sql = "SELECT * FROM ?".into();
-
-    match db.execute_sql(&sql, &[table_name]) {
-        Ok(_) => {
-            let response = ResponseMessage {
-                message: format!("{} into the database.", table_name),
-            };
-            HttpResponse::Ok().json(response)
-        }
-        Err(err) => {
+    let rows: Vec<DataVariant> = match db.read_rows::<DataVariant>(&sql, &[table_name]) {
+        Ok(rows) => rows,
+        Err(error) => {
             let message = format!(
-                "Failed to read all rows from table: {}, Error: {}",
-                table_name, err
+                "Database error fetching all rows for table {}: {}",
+                table_name, error
             );
             error!("{}", message);
             return HttpResponse::InternalServerError().json(message);
         }
-    }
+    };
+    return HttpResponse::Ok().json(rows);
 }
