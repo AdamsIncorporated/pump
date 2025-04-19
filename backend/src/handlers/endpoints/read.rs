@@ -24,8 +24,8 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
         }
     };
     let sql = "SELECT * FROM ?".into();
-    let rows: Vec<DataVariant> = match db.read_rows::<DataVariant>(&sql, &[table_name]) {
-        Ok(rows) => rows,
+    match db.read_rows::<DataVariant>(&sql, &[table_name]) {
+        Ok(rows) => return HttpResponse::Ok().json(rows),
         Err(error) => {
             let message = format!(
                 "Database error fetching all rows for table {}: {}",
@@ -35,5 +35,4 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json(message);
         }
     };
-    return HttpResponse::Ok().json(rows);
 }
