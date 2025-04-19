@@ -1,6 +1,7 @@
 use log::error;
 use rusqlite::{Connection, ToSql};
 use serde::de::DeserializeOwned;
+use serde_json::error;
 use serde_rusqlite::from_rows;
 
 pub struct Database {
@@ -25,7 +26,7 @@ impl Database {
     ) -> Result<usize, Box<dyn std::error::Error>> {
         let tx = self.conn.transaction()?;
         let rows_affected = tx.execute(sql, params)?;
-        tx.commit();
+        tx.commit()?;
         Ok(rows_affected)
     }
 

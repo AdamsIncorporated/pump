@@ -32,7 +32,7 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
         }
     };
 
-    for row in &payload.data {
+    while let Some(row) = &payload.data {
         if let Value::Object(map) = row {
             if let Some(id_value) = map.get("id") {
                 let id = match id_value {
