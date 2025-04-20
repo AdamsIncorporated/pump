@@ -30,7 +30,6 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
         }
     };
 
-
     // create an insert clause
     match &payload.table_name {
         Some(table_name) => {

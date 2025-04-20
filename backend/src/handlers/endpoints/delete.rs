@@ -14,11 +14,14 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
         }
     };
 
-    // create a new instanc eof database
+    // create a new instance of database
     let mut db = match Database::new() {
         Ok(db) => db,
-        Err(err) => {
-            error!("Failed to find the main.db file for the database!: {}", err);
+        Err(error) => {
+            error!(
+                "Failed to find the main.db file for the database!: {}",
+                error
+            );
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
@@ -26,13 +29,16 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
     // Get list of ids in a string tuple format
     let ids: Vec<String> = match payload.get_delete_ids() {
         Ok(ids) => ids.iter().map(|id| id.to_string()).collect(),
-        Err(_) => {
+        Err(error) => {
+            error!(
+                "Failed to find table row id/s parsed from payload: {}",
+                error
+            );
             return HttpResponse::InternalServerError()
-                .json("Failed to table row id/s parsed from payload.")
+                .json("Failed to find table row id/s parsed from payload.");
         }
     };
     let id_placeholders = ids.iter().map(|_| "?, ".to_string()).collect::<String>();
-
     let sql = format!("DELETE FROM ? WHERE ID IN ({})", id_placeholders);
     let mut params: Vec<&dyn rusqlite::types::ToSql> = Vec::new();
 

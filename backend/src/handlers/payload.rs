@@ -42,7 +42,7 @@ impl UpdatePayload {
             .and_then(|obj| obj.as_object())
             .map(|obj| obj.keys().cloned().collect())
             .ok_or_else(|| {
-                PayloadError::JsonParseError("Failed to get keys from create payload.".to_string())
+                PayloadError::JsonParseError("Failed to get keys from update payload.".to_string())
             })
     }
 }

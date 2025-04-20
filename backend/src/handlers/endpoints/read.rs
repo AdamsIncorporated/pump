@@ -2,7 +2,6 @@ use crate::db::Database;
 use crate::handlers::payload::ReadPayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
-use serde_json::json;
 
 #[post("/read")]
 pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
@@ -23,10 +22,10 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
-    let sql = "SELECT * FROM ? ORDER BY Id DESC".into();
+    let sql = format!("SELECT * FROM {} ORDER BY Id DESC", table_name);
 
     // return error or a json response
-    match db.read_all_as_json(sql, &[table_name]) {
+    match db.read_all_as_json(&sql, &[]) {
         Ok(json) => HttpResponse::Ok().json(json),
         Err(error) => {
             error!(
