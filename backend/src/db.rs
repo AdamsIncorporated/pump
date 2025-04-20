@@ -1,8 +1,7 @@
 use log::error;
 use rusqlite::{Connection, ToSql};
-use serde::de::DeserializeOwned;
-use serde_json::error;
-use serde_rusqlite::from_rows;
+use rusqlite::types::Value as rusqliteValue;
+use serde_json::{json, Map, Value as SerdeValue};
 
 pub struct Database {
     conn: Connection,
@@ -30,16 +29,36 @@ impl Database {
         Ok(rows_affected)
     }
 
-    pub fn read_rows<
-        D: DeserializeOwned,
-    >(
+    pub fn read_all_as_json(
         &mut self,
-        sql: &String,
+        sql: &str,
         params: &[&dyn ToSql],
-    ) -> Result<Vec<D>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<SerdeValue>, Box<dyn std::error::Error>> {
         let mut stmt = self.conn.prepare(sql)?;
-        let rows = stmt.query(params)?;
-        let results: Vec<D> = from_rows::<D>(rows).collect::<Result<_, _>>()?;
-        Ok(results)
+        let cols: Vec<String> = stmt
+            .column_names()
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
+
+        let rows = stmt.query_map(params, |row| {
+            let mut map = Map::new();
+            for (i, col) in cols.iter().enumerate() {
+                let value: rusqliteValue = row.get(i)?;
+                let json_value = match value {
+                    rusqliteValue::Null => SerdeValue::Null,
+                    rusqliteValue::Integer(i) => json!(i),
+                    rusqliteValue::Real(f) => json!(f),
+                    rusqliteValue::Text(s) => json!(s),
+                    rusqliteValue::Blob(b) => json!(b),
+                };
+                map.insert(col.to_string(), json_value);
+            }
+
+            Ok(SerdeValue::Object(map))
+        })?;
+
+        let result: Result<Vec<SerdeValue>, _> = rows.collect();
+        result.map_err(|e| e.into())
     }
 }

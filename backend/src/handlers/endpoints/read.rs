@@ -1,8 +1,8 @@
 use crate::db::Database;
 use crate::handlers::payload::ReadPayload;
-use crate::models::models::DataVariant;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
+use serde_json::json;
 
 #[post("/read")]
 pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
@@ -23,16 +23,20 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
-    let sql = "SELECT * FROM ?".into();
-    match db.read_rows::<DataVariant>(&sql, &[table_name]) {
-        Ok(rows) => return HttpResponse::Ok().json(rows),
+    let sql = "SELECT * FROM ? ORDER BY Id DESC".into();
+
+    // return error or a json response
+    match db.read_all_as_json(sql, &[table_name]) {
+        Ok(json) => HttpResponse::Ok().json(json),
         Err(error) => {
-            let message = format!(
-                "Database error fetching all rows for table {}: {}",
-                table_name, error
+            error!(
+                "Fetching data did not work because of rusqlite error: {}",
+                error
             );
-            error!("{}", message);
-            return HttpResponse::InternalServerError().json(message);
+            return HttpResponse::InternalServerError().json(format!(
+                "Internal database error on table '{}': SQL: {}",
+                table_name, sql
+            ));
         }
-    };
+    }
 }

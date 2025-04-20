@@ -1,7 +1,6 @@
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 pub mod handlers;
-pub mod models;
 use handlers::endpoints::create::create;
 use handlers::endpoints::read::read;
 use handlers::endpoints::update::update;
