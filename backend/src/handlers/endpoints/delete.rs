@@ -38,11 +38,16 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
                 .json("Failed to find table row id/s parsed from payload.");
         }
     };
-    let id_placeholders = ids.iter().map(|_| "?, ".to_string()).collect::<String>();
-    let sql = format!("DELETE FROM ? WHERE ID IN ({})", id_placeholders);
+    let id_placeholders = ids
+        .iter()
+        .map(|_| "?".to_string())
+        .collect::<Vec<String>>()
+        .join(", ");
+    let sql = format!(
+        "DELETE FROM {} WHERE ID IN ({})",
+        table_name, id_placeholders
+    );
     let mut params: Vec<&dyn rusqlite::types::ToSql> = Vec::new();
-
-    params.push(table_name);
 
     for id in &ids {
         params.push(id);
@@ -50,10 +55,24 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
 
     // Execute sql
     match db.execute_sql(&sql, &params) {
-        Ok(_) => HttpResponse::Ok().json("Lift successfully inserted into the database."),
+        Ok(_) => {
+            let ids_str = ids.join(", ");
+            let message = format!(
+                "Row id(s) [{}] successfully deleted from {}",
+                ids_str, table_name
+            );
+            HttpResponse::Ok().json(message)
+        }
         Err(err) => {
-            error!("Failed to insert a lift into the database: {}", err);
-            return HttpResponse::InternalServerError().json("Failed to insert lift.");
+            let ids_str = ids.join(", ");
+            error!(
+                "Failed to delete row id/s [{}] into the database for table {}: {}",
+                ids_str, table_name, err
+            );
+            return HttpResponse::InternalServerError().json(format!(
+                "Failed to delete row id/s [{}] into the database for table {}.",
+                ids_str, table_name,
+            ));
         }
     }
 }
