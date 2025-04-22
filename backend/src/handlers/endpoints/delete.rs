@@ -2,6 +2,7 @@ use crate::db::Database;
 use crate::handlers::payload::DeletePayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
+use rusqlite::ToSql;
 
 #[post("/delete")]
 pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
@@ -25,20 +26,8 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
-
-    // Get list of ids in a string tuple format
-    let ids: Vec<String> = match payload.get_delete_ids() {
-        Ok(ids) => ids.iter().map(|id| id.to_string()).collect(),
-        Err(error) => {
-            error!(
-                "Failed to find table row id/s parsed from payload: {}",
-                error
-            );
-            return HttpResponse::InternalServerError()
-                .json("Failed to find table row id/s parsed from payload.");
-        }
-    };
-    let id_placeholders = ids
+    let id_placeholders = payload
+        .ids
         .iter()
         .map(|_| "?".to_string())
         .collect::<Vec<String>>()
@@ -47,30 +36,32 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
         "DELETE FROM {} WHERE ID IN ({})",
         table_name, id_placeholders
     );
-    let mut params: Vec<&dyn rusqlite::types::ToSql> = Vec::new();
-
-    for id in &ids {
-        params.push(id);
-    }
+    let values: Vec<&dyn ToSql> = payload
+        .ids
+        .as_ref()
+        .map(|vector| vector.iter().map(|s| s as &dyn ToSql).collect::<Vec<_>>())
+        .unwrap_or_else(Vec::new);
+    let ids_str: Option<Vec<String>> = payload
+        .ids
+        .as_ref()
+        .map(|vector: &Vec<u32>| vector.iter().map(|num| num.to_string()).collect());
 
     // Execute sql
-    match db.execute_sql(&sql, &params) {
+    match db.execute_sql(&sql, &values) {
         Ok(_) => {
-            let ids_str = ids.join(", ");
             let message = format!(
-                "Row id(s) [{}] successfully deleted from {}",
+                "Row id(s) [{:?}] successfully deleted from {}",
                 ids_str, table_name
             );
             HttpResponse::Ok().json(message)
         }
         Err(err) => {
-            let ids_str = ids.join(", ");
             error!(
-                "Failed to delete row id/s [{}] into the database for table {}: {}",
+                "Failed to delete row id/s [{:?}] into the database for table {}: {}",
                 ids_str, table_name, err
             );
             return HttpResponse::InternalServerError().json(format!(
-                "Failed to delete row id/s [{}] into the database for table {}.",
+                "Failed to delete row id/s [{:?}] into the database for table {}.",
                 ids_str, table_name,
             ));
         }
