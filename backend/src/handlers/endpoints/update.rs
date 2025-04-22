@@ -58,26 +58,31 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
                 (key.clone(), value_str)
             })
             .collect();
-        let column_name_str = insert_dict
+        let update_clause = insert_dict
             .keys()
             .cloned()
             .collect::<Vec<String>>()
-            .join(", ");
-        let placeholders_str = std::iter::repeat("?")
-            .take(insert_dict.len())
-            .collect::<Vec<_>>()
-            .join(", ");
+            .join(" = ?, ");
         let sql = format!(
-            "INSERT INTO {} ({}) VALUES ({})",
-            table_name, column_name_str, placeholders_str
+            "UPDATE {} {} WHERE id = ?",
+            table_name, update_clause
         );
-        let values: Vec<&dyn ToSql> = insert_dict.values().map(|s| s as &dyn ToSql).collect();
+        let mut values: Vec<&dyn ToSql> = insert_dict
+            .iter()
+            .filter(|(key, _)| *key != "id")
+            .map(|(_, value)| value as &dyn ToSql)
+            .collect();
+        if let Some(id_value) = insert_dict.get("id") {
+            values.push(id_value as &dyn ToSql);
+        } else {
+            return HttpResponse::InternalServerError().json("`id` was not supplied to json payload");
+        }
 
         if let Err(err) = db.execute_sql(&sql, &values) {
-            error!("Insert failed: {}", err);
-            return HttpResponse::InternalServerError().json("Failed to insert row.");
+            error!("Update failed: {}", err);
+            return HttpResponse::InternalServerError().json("Update failed for row.");
         }
     }
 
-    HttpResponse::Ok().json(format!("Rows inserted into {}", table_name))
+    HttpResponse::Ok().json(format!("Rows updated into {}", table_name))
 }
