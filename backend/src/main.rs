@@ -1,10 +1,14 @@
+use actix_session::{SessionMiddleware, storage::RedisSessionStore};
+use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
-use actix_web::{App, HttpServer};
+use actix_web::{web, App, HttpServer};
+use std::sync::Mutex;
 pub mod handlers;
+use handlers::endpoints::auth::auth::{AppState, User};
 use handlers::endpoints::create::create;
+use handlers::endpoints::delete::delete;
 use handlers::endpoints::read::read;
 use handlers::endpoints::update::update;
-use handlers::endpoints::delete::delete;
 use log::info;
 pub mod cors;
 pub mod db;
@@ -14,11 +18,28 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     info!("Starting Actix Web server...");
 
+    let users = vec![
+        User {
+            username: "admin".to_string(),
+            password: bcrypt::hash("password", 4).unwrap(),
+        },
+    ];
+
+    let app_state = web::Data::new(AppState {
+        users: Mutex::new(users),
+    });
+
+    let secret_key = Key::generate();
+
     HttpServer::new(|| {
         let cors = cors::create_cors();
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
+            .wrap(SessionMiddleware::new(
+                RedisSessionStore::default(),
+                secret_key.clone()
+            ))
             .service(create)
             .service(read)
             .service(update)

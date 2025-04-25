@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 actix-cors = "0.7.1"
-actix-session = "0.10.1"
+actix-session = {version = "0.10.1", features = ["redis-session"]}
 actix-web = "4.8.0"
 bcrypt = "0.17.0"
 cargo-watch = "8.5.3"

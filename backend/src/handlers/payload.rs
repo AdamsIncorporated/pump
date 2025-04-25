@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
-use std::sync::Mutex;
 
 #[derive(Deserialize, Debug, Serialize)]
 pub struct CreatePayload {
