@@ -9,7 +9,7 @@ use serde_json::Value;
 #[post("/update")]
 pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
     // check if payload is null
-    if payload.table_name.is_none() || payload.data.is_none() {
+    if payload.table_name.is_none() || payload.rows.is_none() {
         return HttpResponse::BadRequest()
             .json("Payload must contain both 'table_name' and 'data' keys.");
     }
@@ -35,7 +35,7 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
     };
 
     // Check if data exists
-    let rows = match &payload.data {
+    let rows = match &payload.rows {
         Some(data) => data,
         None => {
             return HttpResponse::BadRequest().json("Payload must contain 'data' key.");
@@ -44,7 +44,6 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
 
     for row in rows {
         let insert_dict: HashMap<String, String> = row
-            .fields
             .iter()
             .map(|(key, value)| {
                 let value_str = match value {

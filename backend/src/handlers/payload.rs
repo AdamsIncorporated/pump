@@ -2,15 +2,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct DataRow {
-    pub fields: HashMap<String, Value>,
-}
-
 #[derive(Deserialize, Debug, Serialize)]
 pub struct CreatePayload {
     pub table_name: Option<String>,
-    pub data: Option<Vec<DataRow>>,
+    pub rows: Option<Vec<HashMap<String, Value>>>,
 }
 
 #[derive(Deserialize, Debug, Serialize)]
@@ -21,7 +16,7 @@ pub struct ReadPayload {
 #[derive(Deserialize, Debug, Serialize)]
 pub struct UpdatePayload {
     pub table_name: Option<String>,
-    pub data: Option<Vec<DataRow>>,
+    pub rows: Option<Vec<HashMap<String, Value>>>,
 }
 
 #[derive(Deserialize, Debug, Serialize)]

@@ -27,16 +27,15 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     };
 
     // Check if data exists
-    let rows = match &payload.data {
+    let rows = match &payload.rows {
         Some(data) => data,
         None => {
-            return HttpResponse::BadRequest().json("Payload must contain 'data' key.");
+            return HttpResponse::BadRequest().json("Payload must contain 'rows' key.");
         }
     };
 
     for row in rows {
         let insert_dict: HashMap<String, String> = row
-            .fields
             .iter()
             .map(|(key, value)| {
                 let value_str = match value {
