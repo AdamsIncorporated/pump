@@ -31,15 +31,20 @@ async fn main() -> std::io::Result<()> {
 
     let secret_key = Key::generate();
 
-    HttpServer::new(|| {
+    let redis_store = RedisSessionStore::new("redis://127.0.0.1:6379")
+        .await
+        .unwrap();
+
+    HttpServer::new(move || {
         let cors = cors::create_cors();
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
             .wrap(SessionMiddleware::new(
-                RedisSessionStore::default(),
+                redis_store.clone(),
                 secret_key.clone()
             ))
+            .app_data(app_state.clone())
             .service(create)
             .service(read)
             .service(update)
