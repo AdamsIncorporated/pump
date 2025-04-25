@@ -3,8 +3,8 @@ use crate::handlers::payload::UpdatePayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use rusqlite::ToSql;
+use serde_json::{json, Value};
 use std::collections::HashMap;
-use serde_json::Value;
 
 #[post("/update")]
 pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
@@ -35,10 +35,10 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
     };
 
     // Check if data exists
-    let rows = match &payload.rows {
-        Some(data) => data,
+    let rows: &Vec<HashMap<String, Value>> = match &payload.rows {
+        Some(rows) => rows,
         None => {
-            return HttpResponse::BadRequest().json("Payload must contain 'data' key.");
+            return HttpResponse::BadRequest().json("Payload must contain 'rows' key.");
         }
     };
 
@@ -59,27 +59,30 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
             .collect();
         let update_clause = insert_dict
             .keys()
-            .cloned()
+            .filter(|key| *key != "id")
+            .map(|key| format!("{} = ?", key))
             .collect::<Vec<String>>()
-            .join(" = ?, ");
-        let sql = format!(
-            "UPDATE {} {} WHERE id = ?",
-            table_name, update_clause
-        );
+            .join(", ");
+        let sql = format!("UPDATE {} SET {} WHERE id = ?", table_name, update_clause);
         let mut values: Vec<&dyn ToSql> = insert_dict
             .iter()
             .filter(|(key, _)| *key != "id")
             .map(|(_, value)| value as &dyn ToSql)
             .collect();
+
         if let Some(id_value) = insert_dict.get("id") {
             values.push(id_value as &dyn ToSql);
         } else {
-            return HttpResponse::InternalServerError().json("`id` was not supplied to json payload");
+            return HttpResponse::InternalServerError()
+                .json("`id` was not supplied to json payload");
         }
 
         if let Err(err) = db.execute_sql(&sql, &values) {
             error!("Update failed: {}", err);
-            return HttpResponse::InternalServerError().json("Update failed for row.");
+            return HttpResponse::InternalServerError().json(json!({
+                "error": "Update failed for row.",
+                "sql": sql
+            }));
         }
     }
 
