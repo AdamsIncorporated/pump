@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  app:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+    command: ["./target/release/pump"]
+    volumes:
+      - ./backend:/app
+      - /app/target
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"

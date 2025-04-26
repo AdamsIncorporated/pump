@@ -1,4 +1,4 @@
-use actix_session::{SessionMiddleware, storage::RedisSessionStore};
+use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
@@ -18,12 +18,10 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     info!("Starting Actix Web server...");
 
-    let users = vec![
-        User {
-            username: "admin".to_string(),
-            password: bcrypt::hash("password", 4).unwrap(),
-        },
-    ];
+    let users = vec![User {
+        username: "admin".to_string(),
+        password: bcrypt::hash("password", 4).unwrap(),
+    }];
 
     let app_state = web::Data::new(AppState {
         users: Mutex::new(users),
@@ -31,9 +29,13 @@ async fn main() -> std::io::Result<()> {
 
     let secret_key = Key::generate();
 
-    let redis_store = RedisSessionStore::new("redis://127.0.0.1:6379")
-        .await
-        .unwrap();
+    let redis_store = match RedisSessionStore::new("redis://127.0.0.1:6379").await {
+        Ok(store) => store,
+        Err(e) => {
+            eprintln!("Failed to connect to Redis: {:?}", e);
+            panic!("Cannot continue without Redis!");
+        }
+    };
 
     HttpServer::new(move || {
         let cors = cors::create_cors();
@@ -42,7 +44,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(SessionMiddleware::new(
                 redis_store.clone(),
-                secret_key.clone()
+                secret_key.clone(),
             ))
             .app_data(app_state.clone())
             .service(create)
