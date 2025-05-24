@@ -39,6 +39,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = cors::create_cors();
+
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
