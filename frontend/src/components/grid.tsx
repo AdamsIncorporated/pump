@@ -1,23 +1,25 @@
 import React from "react";
 import { PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import DataPanel from "./panel";
+import {read} from "./api";
+
 
 const panelData = [
   {
     title: "Calories",
-    chartData: [1, 2, 3, 4],
+    chartData: read("Calorie"),
     bgColor: "red",
     chartTitle: "Calories",
   },
   {
     title: "Weight",
-    chartData: [67, 70, 65, 80],
+    chartData: read("Weight"),
     bgColor: "blue",
     chartTitle: "Weight (lbs)",
   },
   {
     title: "Lift",
-    chartData: [67, 70, 65, 80],
+    chartData: read("Lift"),
     bgColor: "yellow",
     chartTitle: "Lift",
   },

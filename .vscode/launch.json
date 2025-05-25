@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "cppvsdbg",
+      "request": "launch",
+      "name": "Debug Apollo - Backend",
+      "program": "${workspaceFolder}/backend/target/debug/backend.exe",
+      "args": [],
+      "cwd": "${workspaceRoot}/backend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "Start Backend",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Debug Apollo - Frontend",
+      "type": "firefox",
+      "request": "attach",
+      "webRoot": "${workspaceFolder}/frontend",
+      "url": "http://localhost:8080",
+      "port": 9222,
+      "preLaunchTask": "Start Frontend"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Apollo",
+      "configurations": [
+        "Debug Apollo - Backend",
+        "Debug Apollo - Frontend"
+      ]
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 use crate::db::Database;
-use crate::handlers::payload::ReadQuery;
-use actix_web::{get, web, HttpResponse, Responder};
+use crate::handlers::payload::ReadPayload;
+use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 
-#[get("/read")]
-pub async fn read(query: web::Json<ReadQuery>) -> impl Responder {
+#[post("/read")]
+pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
     // Check if table name payload key is null
-    let table_name = match &query.table_name {
+    let table_name = match &payload.table_name {
         Some(table_name) => table_name,
         None => {
             error!("Payload must contain both 'table_name' key.");

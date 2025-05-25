@@ -1,10 +1,10 @@
 use crate::db::Database;
 use crate::handlers::payload::DeletePayload;
-use actix_web::{delete, web, HttpResponse, Responder};
+use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use rusqlite::ToSql;
 
-#[delete("/delete")]
+#[post("/delete")]
 pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
     // Check if table name payload key is null
     let table_name = match &payload.table_name {
