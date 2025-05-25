@@ -1,12 +1,12 @@
 use crate::db::Database;
 use crate::handlers::payload::UpdatePayload;
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{put, web, HttpResponse, Responder};
 use log::error;
 use rusqlite::ToSql;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 
-#[post("/update")]
+#[put("/update")]
 pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
     // check if payload is null
     if payload.table_name.is_none() || payload.rows.is_none() {
