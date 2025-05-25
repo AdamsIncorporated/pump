@@ -9,7 +9,7 @@ pub struct CreatePayload {
 }
 
 #[derive(Deserialize, Debug, Serialize)]
-pub struct ReadPayload {
+pub struct ReadQuery {
     pub table_name: Option<String>,
 }
 
