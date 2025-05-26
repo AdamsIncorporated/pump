@@ -1,13 +1,12 @@
 export async function read(tableName: string) {
-  const url = "/api/read";
+  const url = `/api/read?table_name=${encodeURIComponent(tableName)}`;
 
   try {
     const response = await fetch(url, {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ table_name: tableName }),
     });
 
     if (!response.ok) {

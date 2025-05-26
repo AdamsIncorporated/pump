@@ -9,11 +9,6 @@ pub struct CreatePayload {
 }
 
 #[derive(Deserialize, Debug, Serialize)]
-pub struct ReadPayload {
-    pub table_name: Option<String>,
-}
-
-#[derive(Deserialize, Debug, Serialize)]
 pub struct UpdatePayload {
     pub table_name: Option<String>,
     pub rows: Option<Vec<HashMap<String, Value>>>,

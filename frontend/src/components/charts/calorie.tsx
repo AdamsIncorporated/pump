@@ -1,13 +1,32 @@
 import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { ApexOptions } from "apexcharts"; // <-- Import this
+import { ApexOptions } from "apexcharts";
 
-type LineChartProps = {
-  chartTitle: string;
-  data: Array<number>;
+export type CalorieEntry = {
+  id: number;
+  created_at?: string; // or Date, if you're converting it
+  carbs?: number;
+  protein?: number;
+  saturated_fat?: number;
+  trans_fat?: number;
+  monounsaturated_fat?: number;
+  polyunsaturated_fat?: number;
+  total_calories: number;
 };
 
-const LineChart: React.FC<LineChartProps> = ({ chartTitle, data }) => {
+export type CalorieData = Array<CalorieEntry>;
+
+type CalorieLineChartProps = {
+  data: CalorieData;
+};
+
+const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
+  const sortedData = [...data].sort((a, b) => {
+    const         
+  })
+
+  const chartData = data.map((entry) => entry.total_calories);
+
   const [options] = useState<ApexOptions>({
     chart: {
       type: "line",
@@ -27,7 +46,7 @@ const LineChart: React.FC<LineChartProps> = ({ chartTitle, data }) => {
       enabled: false,
     },
     title: {
-      text: chartTitle,
+      text: "Calories",
       align: "left",
       style: {
         color: "#F9FAFB",
@@ -57,7 +76,7 @@ const LineChart: React.FC<LineChartProps> = ({ chartTitle, data }) => {
     },
   });
 
-  const [series] = useState([{ data }]);
+  const [series] = useState([{ chartData }]);
 
   return (
     <div className="bg-gray-800 p-4 rounded-xl shadow-lg">
@@ -71,4 +90,4 @@ const LineChart: React.FC<LineChartProps> = ({ chartTitle, data }) => {
   );
 };
 
-export default LineChart;
+export default CalorieLineChart;

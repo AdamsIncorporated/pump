@@ -1,38 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import DataPanel from "./panel";
-import {read} from "./api";
-
-
-const panelData = [
-  {
-    title: "Calories",
-    chartData: read("Calorie"),
-    bgColor: "red",
-    chartTitle: "Calories",
-  },
-  {
-    title: "Weight",
-    chartData: read("Weight"),
-    bgColor: "blue",
-    chartTitle: "Weight (lbs)",
-  },
-  {
-    title: "Lift",
-    chartData: read("Lift"),
-    bgColor: "yellow",
-    chartTitle: "Lift",
-  },
-];
-
-const tableHeaders = ["Name", "Age", "Role"];
-const tableData = [
-  ["Alice", 25, "Engineer"],
-  ["Bob", 30, "Designer"],
-  ["Charlie", 28, "Manager"],
-];
+import { read } from "./api";
 
 export default function Grid() {
+  const [panelData, setPanelData] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [calories, weight, lift] = await Promise.all([
+        read("calorie"),
+        read("weight"),
+        read("lift"),
+      ]);
+
+      setPanelData([
+        {
+          title: "Calories",
+          chartData: calories,
+          bgColor: "red",
+          chartTitle: "Calories",
+        },
+        {
+          title: "Weight",
+          chartData: weight,
+          bgColor: "blue",
+          chartTitle: "Weight (lbs)",
+        },
+        {
+          title: "Lift",
+          chartData: lift,
+          bgColor: "yellow",
+          chartTitle: "Lift",
+        },
+      ]);
+    }
+
+    fetchData();
+  }, []);
+
+  if (!panelData) {
+    return <div className="p-4 text-center">Loading...</div>;
+  }
+
   return (
     <div className="h-screen">
       <PanelGroup autoSaveId="persistence" direction="horizontal">
@@ -40,11 +50,9 @@ export default function Grid() {
           <React.Fragment key={panel.title}>
             <DataPanel
               title={panel.title}
-              chartData={panel.chartData}
+              data={panel.chartData}
               bgColor={panel.bgColor}
               chartTitle={panel.chartTitle}
-              tableHeaders={tableHeaders}
-              tableData={tableData}
             />
             {index < panelData.length - 1 && <PanelResizeHandle />}
           </React.Fragment>

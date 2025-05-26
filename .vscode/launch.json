@@ -4,7 +4,7 @@
     {
       "type": "cppvsdbg",
       "request": "launch",
-      "name": "Debug Apollo - Backend",
+      "name": "Debug Pump - Backend",
       "program": "${workspaceFolder}/backend/target/debug/backend.exe",
       "args": [],
       "cwd": "${workspaceRoot}/backend",
@@ -14,7 +14,7 @@
       "stopAtEntry": false
     },
     {
-      "name": "Debug Apollo - Frontend",
+      "name": "Debug Pump - Frontend",
       "type": "firefox",
       "request": "attach",
       "webRoot": "${workspaceFolder}/frontend",
@@ -23,13 +23,4 @@
       "preLaunchTask": "Start Frontend"
     }
   ],
-  "compounds": [
-    {
-      "name": "Debug Apollo",
-      "configurations": [
-        "Debug Apollo - Backend",
-        "Debug Apollo - Frontend"
-      ]
-    }
-  ]
 }

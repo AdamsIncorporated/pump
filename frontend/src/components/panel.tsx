@@ -5,21 +5,17 @@ import { Panel } from "react-resizable-panels";
 
 interface DataPanelProps {
   title: string;
-  chartData: any[];
+  data: any[];
   bgColor: string;
   chartTitle: string;
-  tableHeaders: string[];
-  tableData: any[];
   children?: ReactNode;
 }
 
 const DataPanel: React.FC<DataPanelProps> = ({
   title,
-  chartData: data,
+  data: data,
   bgColor,
   chartTitle,
-  tableHeaders,
-  tableData,
   children,
 }) => {
   const [isDefaultPane, setIsDefaultPane] = useState("chart");
@@ -58,7 +54,8 @@ const DataPanel: React.FC<DataPanelProps> = ({
             {isDefaultPane === "chart" ? (
               <LineChart chartTitle={chartTitle} data={data} />
             ) : (
-              <TableComponent headers={tableHeaders} data={tableData} />
+              <div></div>
+              // <TableCompnent/>
             )}
           </div>
         </div>

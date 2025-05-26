@@ -1,20 +1,16 @@
 use crate::db::Database;
-use crate::handlers::payload::ReadPayload;
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{get, web, HttpResponse, Responder};
 use log::error;
 
-#[post("/read")]
-pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
-    // Check if table name payload key is null
-    let table_name = match &payload.table_name {
-        Some(table_name) => table_name,
-        None => {
-            error!("Payload must contain both 'table_name' key.");
-            return HttpResponse::BadRequest().json("Payload must contain both 'table_name' key.");
-        }
-    };
+#[derive(serde::Deserialize)]
+pub struct ReadParams {
+    table_name: String
+}
 
-    // create a new instanc eof databawse
+#[get("/read")]
+pub async fn read(query: web::Query<ReadParams>) -> impl Responder {
+    let table_name =  &query.table_name;
+
     let mut db = match Database::new() {
         Ok(db) => db,
         Err(err) => {
@@ -22,9 +18,9 @@ pub async fn read(payload: web::Json<ReadPayload>) -> impl Responder {
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
+
     let sql = format!("SELECT * FROM {} ORDER BY Id DESC", table_name);
 
-    // return error or a json response
     match db.read_all_as_json(&sql, &[]) {
         Ok(json) => HttpResponse::Ok().json(json),
         Err(error) => {
