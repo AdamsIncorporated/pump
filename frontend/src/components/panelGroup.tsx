@@ -24,7 +24,7 @@ const PanelGroupComponent: FC = () => {
             </Panel>
             {index < panelArray.length - 1 && (
               <PanelResizeHandle
-                className="h-4 border-t-4 border-slate-600 my-5"
+                className="h-4 my-5"
                 style={{
                   backgroundImage: `radial-gradient(circle, #94a3b8 2px, transparent 2px)`,
                   backgroundSize: "10px 10px",
