@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import { read } from "../api";
 
 export type CalorieEntry = {
   id: number;
-  created_at?: string; // or Date, if you're converting it
+  created_at?: string;
   carbs?: number;
   protein?: number;
   saturated_fat?: number;
@@ -21,11 +22,27 @@ type CalorieLineChartProps = {
 };
 
 const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
-  const sortedData = [...data].sort((a, b) => {
-    const         
-  })
+  if (!data || data.length === 0) {
+    return (
+      <div className="p-4 text-center text-gray-400">No data to display</div>
+    );
+  }
 
-  const chartData = data.map((entry) => entry.total_calories);
+  const sortedData = [...data].sort((a, b) => {
+    const firstDate = new Date(a.created_at || "").getTime();
+    const secondDate = new Date(b.created_at || "").getTime();
+    return firstDate - secondDate;
+  });
+
+  const calorieValues = sortedData.map((entry) => entry.total_calories);
+  const dateLabels = sortedData.map((entry) => entry.created_at || "");
+
+  const [series] = useState([
+    {
+      name: "Total Calories",
+      data: calorieValues,
+    },
+  ]);
 
   const [options] = useState<ApexOptions>({
     chart: {
@@ -53,6 +70,7 @@ const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
       },
     },
     xaxis: {
+      categories: dateLabels,
       labels: {
         style: {
           colors: "#D1D5DB",
@@ -75,8 +93,6 @@ const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
       borderColor: "#374151",
     },
   });
-
-  const [series] = useState([{ chartData }]);
 
   return (
     <div className="bg-gray-800 p-4 rounded-xl shadow-lg">

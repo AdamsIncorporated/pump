@@ -1,24 +1,40 @@
-import TableComponent from "./table";
-import LineChart from "./lineChart";
-import React, { useState, ReactNode } from "react";
+import TableComponent from "./tables/table";
+import React, { useState, ReactNode, useEffect } from "react";
 import { Panel } from "react-resizable-panels";
+import CalorieLineChart from "./charts/calorie";
+import { read } from "./api";
 
 interface DataPanelProps {
   title: string;
-  data: any[];
+  tableName: string;
   bgColor: string;
-  chartTitle: string;
   children?: ReactNode;
 }
 
 const DataPanel: React.FC<DataPanelProps> = ({
   title,
-  data: data,
+  tableName,
   bgColor,
-  chartTitle,
   children,
 }) => {
   const [isDefaultPane, setIsDefaultPane] = useState("chart");
+
+  const [panelData, setPanelData] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await read(tableName);
+        setPanelData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setPanelData([]); // fallback to empty array if needed
+      }
+    }
+    fetchData();
+  }, [tableName]);
+
+  if (!panelData) return <div className="p-4 text-center">Loading...</div>;
 
   return (
     <Panel minSize={20} className="border-x-2">
@@ -34,17 +50,13 @@ const DataPanel: React.FC<DataPanelProps> = ({
         <div className="flex-row border-2 border-slate-800 rounded">
           <div className="flex bg-slate-900">
             <div
-              onClick={() => {
-                setIsDefaultPane("chart");
-              }}
+              onClick={() => setIsDefaultPane("chart")}
               className="hover:underline hover:cursor-pointer border-r-2 border-slate-800 px-2"
             >
               Chart
             </div>
             <div
-              onClick={() => {
-                setIsDefaultPane("data");
-              }}
+              onClick={() => setIsDefaultPane("data")}
               className="hover:underline hover:cursor-pointer px-2"
             >
               Data
@@ -52,10 +64,9 @@ const DataPanel: React.FC<DataPanelProps> = ({
           </div>
           <div className="p-5">
             {isDefaultPane === "chart" ? (
-              <LineChart chartTitle={chartTitle} data={data} />
+              <CalorieLineChart data={panelData} />
             ) : (
-              <div></div>
-              // <TableCompnent/>
+              <div>{/* TODO: Add <TableComponent data={data} /> here */}</div>
             )}
           </div>
         </div>
