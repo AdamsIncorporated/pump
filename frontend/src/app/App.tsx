@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Grid from "../components/grid";
+import PanelGroupComponent from "../components/panelGroup";
 
 function App() {
   return (
-    <Grid />
+    <PanelGroupComponent />
   )
 }
 

@@ -28,7 +28,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
         setPanelData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setPanelData([]); // fallback to empty array if needed
+        setPanelData([]);
       }
     }
     fetchData();
@@ -37,7 +37,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
   if (!panelData) return <div className="p-4 text-center">Loading...</div>;
 
   return (
-    <Panel minSize={20} className="border-x-2">
+    <div>
       <div className="flex">
         <div className={`bg-${bgColor}-200 w-fit text-black font-bold px-5`}>
           {title}
@@ -72,7 +72,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
         </div>
         {children}
       </div>
-    </Panel>
+    </div>
   );
 };
 
