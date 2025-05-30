@@ -3,6 +3,38 @@
 @tailwind utilities;
 
 html {
-    background-color: #020617;
-    color: white;
+  background-color: #020617;
+  color: white;
+}
+
+@font-face {
+  font-family: "Agave Nerd Font";
+  src: url("../fonts/0xProtoNerdFontMono-Regular.tff") format("tff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+.ag-theme-my-dark {
+  --ag-background-color: #020617;
+  --ag-foreground-color: #ffffff;
+  --ag-header-background-color: #000209;
+  --ag-header-foreground-color: #ffffff;
+  --ag-border-color: #ffffff;
+
+  font-family: "Agave Nerd Font", sans-serif;
+  font-size: 14px;
+  background-color: var(--ag-background-color);
+  color: var(--ag-foreground-color);
+}
+
+.ag-theme-my-dark .ag-cell {
+  background-color: var(--ag-background-color);
+  color: var(--ag-foreground-color);
+}
+
+.ag-theme-my-dark .ag-header-cell {
+  background-color: var(--ag-header-background-color);
+  color: var(--ag-header-foreground-color);
 }

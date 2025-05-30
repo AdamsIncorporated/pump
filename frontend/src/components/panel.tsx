@@ -1,6 +1,5 @@
-import TableComponent from "./tables/table";
+import DataEditor from "./table";
 import React, { useState, ReactNode, useEffect } from "react";
-import { Panel } from "react-resizable-panels";
 import CalorieLineChart from "./charts/calorie";
 import { read } from "./api";
 
@@ -62,11 +61,11 @@ const DataPanel: React.FC<DataPanelProps> = ({
               Data
             </div>
           </div>
-          <div className="p-5">
+          <div className="p-5 h-100">
             {isDefaultPane === "chart" ? (
               <CalorieLineChart data={panelData} />
             ) : (
-              <div>{/* TODO: Add <TableComponent data={data} /> here */}</div>
+              <DataEditor/>
             )}
           </div>
         </div>

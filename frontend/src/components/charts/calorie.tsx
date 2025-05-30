@@ -58,9 +58,7 @@ const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
   const options: ApexOptions = {
     chart: {
       type: "line",
-      height: 100,
       background: "#1f2937",
-      toolbar: { show: false },
     },
     theme: { mode: "dark" },
     stroke: { curve: "stepline" },
@@ -82,8 +80,8 @@ const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="overflow-auto">
-      <div className="bg-gray-800 p-4 rounded-xl shadow-lg">
+    <div className="overflow-auto h-100">
+      <div className="bg-gray-800 p-4 rounded-xl">
         <ReactApexChart options={options} series={series} type="line" />
       </div>
     </div>
