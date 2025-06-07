@@ -9,12 +9,15 @@ html {
 
 @font-face {
   font-family: "Agave Nerd Font";
-  src: url("../fonts/0xProtoNerdFontMono-Regular.tff") format("tff");
+  src: url("../fonts/0xProtoNerdFontMono-Regular.ttf") format("tff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
+body {
+  font-family: "Agave Nerd Font", monospace, sans-serif !important;
+}
 
 .ag-theme-my-dark {
   --ag-background-color: #020617;
@@ -22,8 +25,6 @@ html {
   --ag-header-background-color: #000209;
   --ag-header-foreground-color: #ffffff;
   --ag-border-color: #ffffff;
-
-  font-family: "Agave Nerd Font", sans-serif;
   font-size: 14px;
   background-color: var(--ag-background-color);
   color: var(--ag-foreground-color);

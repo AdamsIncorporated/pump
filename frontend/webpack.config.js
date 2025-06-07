@@ -47,6 +47,14 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)$/i,
         use: ["file-loader?name=[name].[ext]"],
       },
+      {
+        test: /\.(ttf|woff|woff2|eot|otf)$/,
+        include: path.resolve(__dirname, 'src/assets/fonts'),
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]'
+        }
+      }
     ],
   },
   plugins: [
