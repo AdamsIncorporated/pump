@@ -1,5 +1,5 @@
-use actix_web::http::header;
 use actix_cors::Cors;
+use actix_web::http::header;
 
 pub fn create_cors() -> Cors {
     Cors::default()
@@ -8,4 +8,3 @@ pub fn create_cors() -> Cors {
         .allowed_headers(vec![header::CONTENT_TYPE, header::AUTHORIZATION])
         .max_age(3600)
 }
-
