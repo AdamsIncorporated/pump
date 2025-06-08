@@ -2,25 +2,19 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export type CalorieEntry = {
+export type LiftEntry = {
   id: number;
   created_at?: string;
-  carbs?: number;
-  protein?: number;
-  saturated_fat?: number;
-  trans_fat?: number;
-  monounsaturated_fat?: number;
-  polyunsaturated_fat?: number;
-  total_calories: number;
+  weight_lbs: number;
 };
 
-export type CalorieData = CalorieEntry[];
+export type LiftData = LiftEntry[];
 
-type CalorieLineChartProps = {
-  data: CalorieData;
+type LiftLineChartProps = {
+  data: LiftData;
 };
 
-const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
+const LiftLineChart: React.FC<LiftLineChartProps> = ({ data }) => {
   if (!data?.length) {
     return (
       <div className="p-4 text-center text-gray-400">
@@ -46,12 +40,12 @@ const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
     });
   });
 
-  const calorieValues = sortedData.map(({ total_calories }) => total_calories);
+  const liftValues = sortedData.map(({ weight_lbs }) => weight_lbs);
 
   const series = [
     {
-      name: "Total Calories",
-      data: calorieValues,
+      name: "Total Weight",
+      data: liftValues,
     },
   ];
 
@@ -88,4 +82,4 @@ const CalorieLineChart: React.FC<CalorieLineChartProps> = ({ data }) => {
   );
 };
 
-export default CalorieLineChart;
+export default LiftLineChart;

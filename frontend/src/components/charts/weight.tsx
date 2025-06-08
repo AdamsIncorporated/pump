@@ -2,13 +2,13 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export type CalorieEntry = {
+export type WeightEntry = {
   id: number;
   created_at?: string;
   weight_lbs?: number;
 };
 
-export type WeightData = CalorieEntry[];
+export type WeightData = WeightEntry[];
 
 type WeightLineChartProps = {
   data: WeightData;
@@ -38,9 +38,11 @@ const WeightLineChart: React.FC<WeightLineChartProps> = ({ data }) => {
     });
   });
 
-  const weightValues = sortedData.map(({ weight_lbs }) => weight_lbs);
+  const weightValues = sortedData.map(({ weight_lbs }) => 
+    typeof weight_lbs === "number" ? weight_lbs : 0
+  );
 
-  const series = [
+  const series: ApexAxisChartSeries = [
     {
       name: "Total Weight",
       data: weightValues,

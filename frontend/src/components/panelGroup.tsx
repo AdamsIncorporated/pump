@@ -1,13 +1,30 @@
 import React, { FC } from "react";
 import DataPanel from "./panel";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import wi
+import WeightLineChart from "./charts/weight";
+import CalorieLineChart from "./charts/calorie";
+import LiftLineChart from "./charts/lift";
 
 const PanelGroupComponent: FC = () => {
   const panelArray = [
-    { title: "Calories", tableName: "calorie", bgColor: "red" },
-    { title: "Weight", tableName: "weight", bgColor: "blue" },
-    { title: "Lift", tableName: "lift", bgColor: "yellow" },
+    {
+      title: "Calories",
+      tableName: "calorie",
+      bgColor: "red",
+      chartObject: CalorieLineChart,
+    },
+    {
+      title: "Weight",
+      tableName: "weight",
+      bgColor: "blue",
+      chartObject: WeightLineChart,
+    },
+    {
+      title: "Lift",
+      tableName: "lift",
+      bgColor: "yellow",
+      chartObject: LiftLineChart,
+    },
   ];
 
   return (
@@ -20,6 +37,7 @@ const PanelGroupComponent: FC = () => {
                 tableName={panel.tableName}
                 title={panel.title}
                 bgColor={panel.bgColor}
+                chartObject={panel.chartObject}
               />
             </Panel>
             {index < panelArray.length - 1 && (
