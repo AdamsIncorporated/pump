@@ -12,30 +12,15 @@ interface DataEditorProps {
 }
 
 const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
-  const [rowData, setRowData] = useState<Record<string, any>[]>(data);
-
-  // ✅ Sync internal rowData when parent data changes
-  useEffect(() => {
-    setRowData(data);
-  }, [data]);
   const columnDefs = getColumnDefs(tableName);
 
   return (
-    <div>
-      <div className="ag-theme-my-dark" style={{ height: 400, width: "100%" }}>
-        <AgGridReact
-          rowData={rowData}
-          columnDefs={columnDefs}
-          defaultColDef={{ flex: 1, editable: true, resizable: true }}
-          onCellValueChanged={(e) => {
-            if (e.rowIndex !== null) {
-              const updatedData = [...rowData];
-              updatedData[e.rowIndex] = e.data;
-              setRowData(updatedData);
-            }
-          }}
-        />
-      </div>
+    <div className="ag-theme-my-dark" style={{ height: "100%", width: "100%" }}>
+      <AgGridReact
+        rowData={data}
+        columnDefs={columnDefs}
+        defaultColDef={{ flex: 1, editable: true, resizable: true }}
+      />
     </div>
   );
 };
