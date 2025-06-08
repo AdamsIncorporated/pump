@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 import DataPanel from "./panel";
-import { Panel, PanelGroup } from "react-resizable-panels";
-import { PanelResizeHandle } from "react-resizable-panels";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import wi
 
 const PanelGroupComponent: FC = () => {
   const panelArray = [
     { title: "Calories", tableName: "calorie", bgColor: "red" },
-    { title: "Weight", tableName: "calorie", bgColor: "blue" },
-    { title: "Lift", tableName: "calorie", bgColor: "yellow" },
+    { title: "Weight", tableName: "weight", bgColor: "blue" },
+    { title: "Lift", tableName: "lift", bgColor: "yellow" },
   ];
 
   return (

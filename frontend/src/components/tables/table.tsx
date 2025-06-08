@@ -12,15 +12,19 @@ interface DataEditorProps {
 
 const DataEditor: React.FC<DataEditorProps> = ({ data = [] }) => {
   const [rowData, setRowData] = useState<Record<string, any>[]>(data);
+  const excludedKeys = ["id", "created_at"];
 
   const columnDefs = useMemo(() => {
     if (rowData.length === 0) return [];
 
     const keys = Object.keys(rowData[0]);
-    return keys.map((key) => ({
-      field: key,
-      editable: true,
-    }));
+    return keys
+      .filter((key) => !excludedKeys.includes(key))
+      .map((key) => ({
+        field: key,
+        editable: true,
+        headerName: String(key).toUpperCase()
+      }));
   }, [rowData]);
 
   const addRow = () => {

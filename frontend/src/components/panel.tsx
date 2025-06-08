@@ -1,6 +1,5 @@
 import DataEditor from "./tables/table";
 import React, { useState, ReactNode, useEffect } from "react";
-import CalorieLineChart from "./charts/calorie";
 import { read } from "./api";
 
 interface DataPanelProps {
@@ -8,6 +7,7 @@ interface DataPanelProps {
   tableName: string;
   bgColor: string;
   children?: ReactNode;
+  chartObject?: React.ElementType;
 }
 
 const DataPanel: React.FC<DataPanelProps> = ({
@@ -15,6 +15,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
   tableName,
   bgColor,
   children,
+  chartObject,
 }) => {
   const [isDefaultPane, setIsDefaultPane] = useState("chart");
 
@@ -62,10 +63,10 @@ const DataPanel: React.FC<DataPanelProps> = ({
             </div>
           </div>
           <div className="p-5 h-100">
-            {isDefaultPane === "chart" ? (
-              <CalorieLineChart data={panelData} />
+            {isDefaultPane === "chart" && chartObject ? (
+              React.createElement(chartObject, { data: panelData })
             ) : (
-              <DataEditor data={panelData}/>
+              <DataEditor data={panelData} />
             )}
           </div>
         </div>
