@@ -15,12 +15,6 @@ type WeightLineChartProps = {
 };
 
 const WeightLineChart: React.FC<WeightLineChartProps> = ({ data }) => {
-  if (!data?.length) {
-    return (
-      <div className="p-4 text-center text-gray-400">No data to display</div>
-    );
-  }
-
   // Sort data by date ascending, safely parse dates
   const sortedData = [...data].sort((a, b) => {
     const dateA = new Date(a.created_at ?? 0).getTime();
