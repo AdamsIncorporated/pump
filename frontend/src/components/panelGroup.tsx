@@ -42,16 +42,17 @@ const PanelGroupComponent: FC = () => {
   const [panelData, setPanelData] = useState<Record<string, any>>({});
 
   useEffect(() => {
-    const fetchAllData = async () => {
-      const results: Record<string, any> = {};
-      for (const panel of panelArray) {
-        const data = await fetchData(panel.tableName);
-        results[panel.tableName] = data;
-      }
-      setPanelData(results);
+    const fetchActivePanelData = async () => {
+      const tableName = activePanel.tableName;
+      const data = await fetchData(tableName);
+      setPanelData((prev) => ({ ...prev, [tableName]: data }));
     };
-    fetchAllData();
-  }, []);
+
+    // Only fetch if data hasn't been fetched already
+    if (!panelData[activePanel.tableName]) {
+      fetchActivePanelData();
+    }
+  }, [activeIndex]);
 
   const activePanel = panelArray[activeIndex];
   const data = panelData[activePanel.tableName] || [];
@@ -64,7 +65,9 @@ const PanelGroupComponent: FC = () => {
             key={index}
             onClick={() => setActiveIndex(index)}
             className={`px-4 py-2 rounded ${
-              index === activeIndex ? "bg-slate-500 text-white" : "bg-slate-800 text-white"
+              index === activeIndex
+                ? "bg-slate-500 text-white"
+                : "bg-slate-800 text-white"
             }`}
           >
             {panel.title}
@@ -73,7 +76,6 @@ const PanelGroupComponent: FC = () => {
       </div>
 
       <DataPanel
-        tableName={activePanel.tableName}
         title={activePanel.title}
         bgColor={activePanel.bgColor}
         chartObject={activePanel.chartObject}

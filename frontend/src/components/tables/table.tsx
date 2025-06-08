@@ -1,6 +1,5 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef } from "ag-grid-community";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 
 // Register all modules
@@ -12,6 +11,12 @@ interface DataEditorProps {
 
 const DataEditor: React.FC<DataEditorProps> = ({ data = [] }) => {
   const [rowData, setRowData] = useState<Record<string, any>[]>(data);
+
+  // ✅ Sync internal rowData when parent data changes
+  useEffect(() => {
+    setRowData(data);
+  }, [data]);
+
   const excludedKeys = ["id", "created_at"];
 
   const columnDefs = useMemo(() => {
@@ -23,7 +28,7 @@ const DataEditor: React.FC<DataEditorProps> = ({ data = [] }) => {
       .map((key) => ({
         field: key,
         editable: true,
-        headerName: String(key).toUpperCase()
+        headerName: String(key).toUpperCase(),
       }));
   }, [rowData]);
 

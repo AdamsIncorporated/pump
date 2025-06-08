@@ -5,7 +5,6 @@ import { FaChartBar, FaEdit } from "react-icons/fa";
 
 interface DataPanelProps {
   title: string;
-  tableName: string;
   bgColor: string;
   children?: ReactNode;
   chartObject?: React.ElementType;
@@ -14,7 +13,6 @@ interface DataPanelProps {
 
 const DataPanel: React.FC<DataPanelProps> = ({
   title,
-  tableName,
   bgColor,
   children,
   chartObject,
@@ -51,12 +49,10 @@ const DataPanel: React.FC<DataPanelProps> = ({
             </div>
           </div>
           <div className="p-5 h-100">
-            {isDefaultPane === "chart" &&
-            chartObject &&
-            data.length > 0 ? (
-              React.createElement(chartObject, { data: data })
+            {isDefaultPane === "chart" && chartObject ? (
+              React.createElement(chartObject, { data: data, key: title })
             ) : (
-              <DataEditor data={data} />
+              <DataEditor data={data} key={title} />
             )}
           </div>
         </div>
