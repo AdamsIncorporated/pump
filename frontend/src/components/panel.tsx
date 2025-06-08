@@ -1,4 +1,4 @@
-import DataEditor from "./table";
+import DataEditor from "./tables/table";
 import React, { useState, ReactNode, useEffect } from "react";
 import CalorieLineChart from "./charts/calorie";
 import { read } from "./api";
@@ -65,7 +65,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
             {isDefaultPane === "chart" ? (
               <CalorieLineChart data={panelData} />
             ) : (
-              <DataEditor/>
+              <DataEditor data={panelData}/>
             )}
           </div>
         </div>

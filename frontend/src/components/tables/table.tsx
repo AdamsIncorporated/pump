@@ -1,43 +1,57 @@
-import React from "react";
+import React, { useState, useRef, useMemo } from "react";
+import { AgGridReact } from "ag-grid-react";
+import { ColDef } from "ag-grid-community";
+import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 
-interface TableComponentProps {
-  headers: string[];
-  data: (string | number | React.ReactNode)[][];
+// Register all modules
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+interface DataEditorProps {
+  data?: Record<string, any>[];
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({ headers, data }) => {
+const DataEditor: React.FC<DataEditorProps> = ({ data = [] }) => {
+  const [rowData, setRowData] = useState<Record<string, any>[]>(data);
+
+  const columnDefs = useMemo(() => {
+    if (rowData.length === 0) return [];
+
+    const keys = Object.keys(rowData[0]);
+    return keys.map((key) => ({
+      field: key,
+      editable: true,
+    }));
+  }, [rowData]);
+
+  const addRow = () => {
+    const emptyRow: Record<string, any> = {};
+    columnDefs.forEach((col) => {
+      emptyRow[col.field] = "";
+    });
+    setRowData((prev) => [...prev, emptyRow]);
+  };
+
   return (
-    <div className="overflow-x-auto rounded-xl shadow-md border dark:border-gray-700">
-      <table className="min-w-full text-sm text-left text-gray-700 dark:text-gray-300">
-        <thead className="bg-gray-100 dark:bg-gray-800">
-          <tr>
-            {headers.map((header, index) => (
-              <th
-                key={index}
-                className="px-4 py-3 font-medium tracking-wide uppercase whitespace-nowrap"
-              >
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-          {data.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className="hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex} className="px-4 py-3 whitespace-nowrap">
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <button onClick={addRow} style={{ marginBottom: "10px" }}>
+        Add Row
+      </button>
+      <div className="ag-theme-my-dark" style={{ height: 400, width: "100%" }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={{ flex: 1, editable: true, resizable: true }}
+          onCellValueChanged={(e) => {
+            if (e.rowIndex !== null) {
+              const updatedData = [...rowData];
+              updatedData[e.rowIndex] = e.data;
+              setRowData(updatedData);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };
 
-export default TableComponent;
+export default DataEditor;
