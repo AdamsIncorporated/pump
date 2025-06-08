@@ -2,13 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export type LiftEntry = {
-  id: number;
-  created_at?: string;
-  weight_lbs: number;
-};
 
-export type LiftData = LiftEntry[];
 
 type LiftLineChartProps = {
   data: LiftData;

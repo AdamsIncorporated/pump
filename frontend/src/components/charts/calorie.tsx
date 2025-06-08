@@ -2,19 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export type CalorieEntry = {
-  id: number;
-  created_at?: string;
-  carbs?: number;
-  protein?: number;
-  saturated_fat?: number;
-  trans_fat?: number;
-  monounsaturated_fat?: number;
-  polyunsaturated_fat?: number;
-  total_calories: number;
-};
 
-export type CalorieData = CalorieEntry[];
 
 type CalorieLineChartProps = {
   data: CalorieData;
