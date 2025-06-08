@@ -1,32 +1,32 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import DataPanel from "./panel";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import WeightLineChart from "./charts/weight";
 import CalorieLineChart from "./charts/calorie";
 import LiftLineChart from "./charts/lift";
 
-const PanelGroupComponent: FC = () => {
-  const panelArray = [
-    {
-      title: "Calories",
-      tableName: "calorie",
-      bgColor: "red",
-      chartObject: CalorieLineChart,
-    },
-    {
-      title: "Weight",
-      tableName: "weight",
-      bgColor: "blue",
-      chartObject: WeightLineChart,
-    },
-    {
-      title: "Lift",
-      tableName: "lift",
-      bgColor: "yellow",
-      chartObject: LiftLineChart,
-    },
-  ];
+const panelArray = [
+  {
+    title: "Calories",
+    tableName: "calorie",
+    bgColor: "red",
+    chartObject: CalorieLineChart,
+  },
+  {
+    title: "Weight",
+    tableName: "weight",
+    bgColor: "blue",
+    chartObject: WeightLineChart,
+  },
+  {
+    title: "Lift",
+    tableName: "lift",
+    bgColor: "yellow",
+    chartObject: LiftLineChart,
+  },
+];
 
+const PanelGroupComponent: FC = () => {
   return (
     <div className="h-screen overflow-auto p-4 max-w-1/2">
       <PanelGroup direction="vertical">
