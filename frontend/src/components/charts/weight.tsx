@@ -1,8 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-
-
+import { WeightData } from "../models/models";
 
 type WeightLineChartProps = {
   data: WeightData;
@@ -69,9 +68,14 @@ const WeightLineChart: React.FC<WeightLineChartProps> = ({ data }) => {
   };
 
   return (
-      <div className="bg-gray-800 p-4 rounded-xl">
-        <ReactApexChart options={options} series={series} type="line" height={500} />
-      </div>
+    <div className="bg-gray-800 p-4 rounded-xl">
+      <ReactApexChart
+        options={options}
+        series={series}
+        type="line"
+        height={500}
+      />
+    </div>
   );
 };
 

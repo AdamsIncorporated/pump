@@ -1,10 +1,10 @@
 import DataEditor from "./tables/table";
-import React, { useState, ReactNode, useEffect } from "react";
-import { read } from "./api";
+import React, { useState, ReactNode } from "react";
 import { FaChartBar, FaEdit } from "react-icons/fa";
 
 interface DataPanelProps {
   title: string;
+  tableName: string,
   bgColor: string;
   children?: ReactNode;
   chartObject?: React.ElementType;
@@ -13,6 +13,7 @@ interface DataPanelProps {
 
 const DataPanel: React.FC<DataPanelProps> = ({
   title,
+  tableName,
   bgColor,
   children,
   chartObject,
@@ -52,7 +53,7 @@ const DataPanel: React.FC<DataPanelProps> = ({
             {isDefaultPane === "chart" && chartObject ? (
               React.createElement(chartObject, { data: data, key: title })
             ) : (
-              <DataEditor data={data} key={title} />
+              <DataEditor data={data} tableName={tableName} key={title}  />
             )}
           </div>
         </div>

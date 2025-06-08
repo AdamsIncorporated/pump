@@ -1,50 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
+import { getColumnDefs } from "./columnDef";
 
 // Register all modules
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface DataEditorProps {
-  data?: Record<string, any>[];
+  tableName: string;
+  data: Record<string, any>[];
 }
 
-const DataEditor: React.FC<DataEditorProps> = ({ data = [] }) => {
+const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
   const [rowData, setRowData] = useState<Record<string, any>[]>(data);
 
   // ✅ Sync internal rowData when parent data changes
   useEffect(() => {
     setRowData(data);
   }, [data]);
-
-  const excludedKeys = ["id", "created_at"];
-
-  const columnDefs = useMemo(() => {
-    if (rowData.length === 0) return [];
-
-    const keys = Object.keys(rowData[0]);
-    return keys
-      .filter((key) => !excludedKeys.includes(key))
-      .map((key) => ({
-        field: key,
-        editable: true,
-        headerName: String(key).toUpperCase(),
-      }));
-  }, [rowData]);
-
-  const addRow = () => {
-    const emptyRow: Record<string, any> = {};
-    columnDefs.forEach((col) => {
-      emptyRow[col.field] = "";
-    });
-    setRowData((prev) => [...prev, emptyRow]);
-  };
+  const columnDefs = getColumnDefs(tableName);
 
   return (
     <div>
-      <button onClick={addRow} style={{ marginBottom: "10px" }}>
-        Add Row
-      </button>
       <div className="ag-theme-my-dark" style={{ height: 400, width: "100%" }}>
         <AgGridReact
           rowData={rowData}

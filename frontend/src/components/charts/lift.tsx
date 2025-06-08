@@ -1,7 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-
+import { LiftData } from "../models/models";
 
 
 type LiftLineChartProps = {

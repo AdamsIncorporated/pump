@@ -77,6 +77,7 @@ const PanelGroupComponent: FC = () => {
 
       <DataPanel
         title={activePanel.title}
+        tableName={activePanel.tableName}
         bgColor={activePanel.bgColor}
         chartObject={activePanel.chartObject}
         data={data}

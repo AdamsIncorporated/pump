@@ -1,8 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-
-
+import { CalorieData } from "../models/models";
 
 type CalorieLineChartProps = {
   data: CalorieData;
