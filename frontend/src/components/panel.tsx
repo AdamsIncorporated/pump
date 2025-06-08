@@ -9,6 +9,7 @@ interface DataPanelProps {
   bgColor: string;
   children?: ReactNode;
   chartObject?: React.ElementType;
+  data: Record<string, any>[];
 }
 
 const DataPanel: React.FC<DataPanelProps> = ({
@@ -17,33 +18,9 @@ const DataPanel: React.FC<DataPanelProps> = ({
   bgColor,
   children,
   chartObject,
+  data,
 }) => {
   const [isDefaultPane, setIsDefaultPane] = useState("chart");
-  const [panelData, setPanelData] = useState<any[] | null>(null);
-  let isMounted = true;
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await read(tableName);
-        if (isMounted) {
-          setPanelData(data);
-        }
-      } catch (error) {
-        if (isMounted) {
-          console.error("Error fetching data:", error);
-          setPanelData([]);
-        }
-      }
-    }
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [tableName]);
-
-  if (!panelData) return <div className="p-4 text-center">Loading...</div>;
 
   return (
     <div>
@@ -74,10 +51,12 @@ const DataPanel: React.FC<DataPanelProps> = ({
             </div>
           </div>
           <div className="p-5 h-100">
-            {isDefaultPane === "chart" && chartObject && panelData.length > 0 ? (
-              React.createElement(chartObject, { data: panelData || [] })
+            {isDefaultPane === "chart" &&
+            chartObject &&
+            data.length > 0 ? (
+              React.createElement(chartObject, { data: data })
             ) : (
-              <DataEditor data={panelData || []} />
+              <DataEditor data={data} />
             )}
           </div>
         </div>
