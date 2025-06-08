@@ -58,7 +58,7 @@ const LiftLineChart: React.FC<LiftLineChartProps> = ({ data }) => {
     stroke: { curve: "stepline" },
     dataLabels: { enabled: false },
     title: {
-      text: "Calories",
+      text: "Weight",
       align: "left",
       style: { color: "#F9FAFB" },
     },

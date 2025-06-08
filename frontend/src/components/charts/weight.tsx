@@ -38,7 +38,7 @@ const WeightLineChart: React.FC<WeightLineChartProps> = ({ data }) => {
     });
   });
 
-  const weightValues = sortedData.map(({ weight_lbs }) => 
+  const weightValues = sortedData.map(({ weight_lbs }) =>
     typeof weight_lbs === "number" ? weight_lbs : 0
   );
 
@@ -53,32 +53,37 @@ const WeightLineChart: React.FC<WeightLineChartProps> = ({ data }) => {
     chart: {
       type: "line",
       background: "#1f2937",
+      height: 400,
     },
     theme: { mode: "dark" },
     stroke: { curve: "stepline" },
     dataLabels: { enabled: false },
     title: {
-      text: "Calories",
+      text: "Weight",
       align: "left",
       style: { color: "#F9FAFB" },
     },
     xaxis: {
       categories: dateLabels,
-      labels: { style: { colors: "#D1D5DB" } },
+      labels: {
+        style: { colors: "#D1D5DB" },
+        trim: true,
+        minHeight: 60,
+        maxHeight: 80,
+        offsetY: 5,
+      },
     },
     yaxis: {
       labels: { style: { colors: "#D1D5DB" } },
     },
-    markers: { hover: { sizeOffset: 4 } },
+    markers: { hover: { sizeOffset: 5 } },
     grid: { borderColor: "#374151" },
   };
 
   return (
-    <div className="overflow-auto h-100">
       <div className="bg-gray-800 p-4 rounded-xl">
-        <ReactApexChart options={options} series={series} type="line" />
+        <ReactApexChart options={options} series={series} type="line" height={500} />
       </div>
-    </div>
   );
 };
 
