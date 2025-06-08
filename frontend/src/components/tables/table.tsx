@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 import { getColumnDefs } from "./columnDef";
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 // Register all modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -13,14 +14,43 @@ interface DataEditorProps {
 
 const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
   const columnDefs = getColumnDefs(tableName);
+  const [rowData, setRowData] = useState(data);
+
+  const onCellValueChanged = (event: any) => {
+    const updatedRow = event.data;
+    setRowData((prevData) =>
+      prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+    );
+  };
+
+  const addRow = () => {
+    const newRow: Record<string, any> = {};
+    columnDefs.forEach((col: any) => {
+      newRow[col.field] = 0
+    })
+
+    setRowData((prev) => [...prev, newRow]);
+  };
 
   return (
-    <div className="ag-theme-my-dark" style={{ height: "100%", width: "100%" }}>
-      <AgGridReact
-        rowData={data}
-        columnDefs={columnDefs}
-        defaultColDef={{ flex: 1, editable: true, resizable: true }}
-      />
+    <div>
+      <button
+        className="mb-2 px-4 py-1 bg-slate-500 text-white rounded-full"
+        onClick={addRow}
+      >
+        <IoIosAddCircleOutline />
+      </button>
+      <div
+        className="ag-theme-my-dark"
+        style={{ height: "500px", width: "100%" }}
+      >
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={{ flex: 1, editable: true, resizable: true }}
+          onCellValueChanged={onCellValueChanged}
+        />
+      </div>
     </div>
   );
 };
