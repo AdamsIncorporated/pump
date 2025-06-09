@@ -26,8 +26,8 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
   const addRow = () => {
     const newRow: Record<string, any> = {};
     columnDefs.forEach((col: any) => {
-      newRow[col.field] = 0
-    })
+      newRow[col.field] = null;
+    });
 
     setRowData((prev) => [...prev, newRow]);
   };
@@ -35,7 +35,7 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
   return (
     <div>
       <button
-        className="mb-2 px-4 py-1 bg-slate-500 text-white rounded-full"
+        className="mb-2 px-4 py-1 bg-slate-500 text-white rounded-full hover:bg-slate-600"
         onClick={addRow}
       >
         <IoIosAddCircleOutline />

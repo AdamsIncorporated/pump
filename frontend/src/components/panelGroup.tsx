@@ -1,9 +1,9 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useLayoutEffect } from "react";
 import DataPanel from "./panel";
 import WeightLineChart from "./charts/weight";
 import CalorieLineChart from "./charts/calorie";
 import LiftLineChart from "./charts/lift";
-import { read } from "./api";
+import { read } from "../api/api";
 
 async function fetchData(tableName?: string) {
   if (!tableName) return null;
@@ -40,11 +40,13 @@ const panelArray = [
 const PanelGroupComponent: FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [panelData, setPanelData] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const fetchActivePanelData = async () => {
       const tableName = activePanel.tableName;
       const data = await fetchData(tableName);
+      setLoading(false);
       setPanelData((prev) => ({ ...prev, [tableName]: data }));
     };
 
@@ -74,14 +76,17 @@ const PanelGroupComponent: FC = () => {
           </button>
         ))}
       </div>
-
-      <DataPanel
-        title={activePanel.title}
-        tableName={activePanel.tableName}
-        bgColor={activePanel.bgColor}
-        chartObject={activePanel.chartObject}
-        data={data}
-      />
+      {loading ? (
+        <div className="text-center text-white py-10">Loading...</div>
+      ) : (
+        <DataPanel
+          title={activePanel.title}
+          tableName={activePanel.tableName}
+          bgColor={activePanel.bgColor}
+          chartObject={activePanel.chartObject}
+          data={data}
+        />
+      )}
     </div>
   );
 };

@@ -16,6 +16,7 @@ export const calorieColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
     width: 150,
+    hide: true
   },
   {
     field: "carbs",
@@ -84,6 +85,7 @@ export const liftColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
     width: 150,
+    hide: true
   },
   {
     field: "weight_lbs",
@@ -110,6 +112,7 @@ export const weightColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
     width: 150,
+    hide: true
   },
   {
     field: "weight_lbs",

@@ -4,7 +4,7 @@ import { FaChartBar, FaEdit } from "react-icons/fa";
 
 interface DataPanelProps {
   title: string;
-  tableName: string,
+  tableName: string;
   bgColor: string;
   children?: ReactNode;
   chartObject?: React.ElementType;
@@ -50,10 +50,18 @@ const DataPanel: React.FC<DataPanelProps> = ({
             </div>
           </div>
           <div className="p-5 h-100">
-            {isDefaultPane === "chart" && chartObject ? (
-              React.createElement(chartObject, { data: data, key: title })
+            {chartObject && data.length > 0 ? (
+              isDefaultPane === "chart" ? (
+                React.createElement(chartObject, { data: data, key: title })
+              ) : (
+                <DataEditor
+                  data={data}
+                  tableName={tableName}
+                  key={`agGrid${title}`}
+                />
+              )
             ) : (
-              <DataEditor data={data} tableName={tableName} key={title}  />
+              <div></div>
             )}
           </div>
         </div>
