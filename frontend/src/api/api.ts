@@ -2,6 +2,7 @@ import { UpdatePayload, DeletePayload } from "./payload";
 
 export async function read(tableName: string) {
   const url = `/api/read?table_name=${encodeURIComponent(tableName)}`;
+  console.log(`[read] Fetching data from: ${url}`);
 
   try {
     const response = await fetch(url, {
@@ -11,19 +12,25 @@ export async function read(tableName: string) {
       },
     });
 
+    console.log(`[read] Response status: ${response.status}`);
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log("[read] Data received:", data);
     return data;
   } catch (error) {
-    console.error("Failed to fetch data.", error);
+    console.error("[read] Failed to fetch data:", error);
     throw error;
   }
 }
 
 export async function updateRow(row: Record<string, any>, table_name: string) {
+  console.log("[updateRow] Updating row:", row);
+  console.log("[updateRow] Table name:", table_name);
+
   try {
     if (!row.id) {
       throw new Error("Missing row ID for update.");
@@ -34,6 +41,8 @@ export async function updateRow(row: Record<string, any>, table_name: string) {
       rows: [row],
     };
 
+    console.log("[updateRow] Payload:", payload);
+
     const response = await fetch("/api/update", {
       method: "PUT",
       headers: {
@@ -42,14 +51,17 @@ export async function updateRow(row: Record<string, any>, table_name: string) {
       body: JSON.stringify(payload),
     });
 
+    console.log("[updateRow] Response status:", response.status);
+
     if (!response.ok) {
       throw new Error(`Failed to update entry: ${response.statusText}`);
     }
 
     const updated = await response.json();
+    console.log("[updateRow] Updated result:", updated);
     return updated;
   } catch (error) {
-    console.error("Update error:", error);
+    console.error("[updateRow] Update error:", error);
     throw error;
   }
 }
@@ -59,6 +71,9 @@ export async function deleteRow(
   tableName: string,
   setRowData: React.Dispatch<React.SetStateAction<any[]>>
 ) {
+  console.log("[deleteRow] Attempting to delete row:", row);
+  console.log("[deleteRow] Table name:", tableName);
+
   if (!row.id) {
     throw new Error("Missing row ID for delete.");
   }
@@ -67,6 +82,8 @@ export async function deleteRow(
     table_name: tableName,
     ids: [row.id],
   };
+
+  console.log("[deleteRow] Payload:", payload);
 
   if (window.confirm(`Delete row with ID ${row.id}?`)) {
     try {
@@ -78,16 +95,24 @@ export async function deleteRow(
         body: JSON.stringify(payload),
       });
 
+      console.log("[deleteRow] Response status:", response.status);
+
       if (!response.ok) {
         throw new Error(`Delete failed: ${response.statusText}`);
       }
 
       // ✅ Remove the deleted row from UI
-      setRowData(prev => prev.filter(r => r.id !== row.id));
+      setRowData(prev => {
+        const updated = prev.filter(r => r.id !== row.id);
+        console.log("[deleteRow] Updated row data after deletion:", updated);
+        return updated;
+      });
 
-      console.log(`Row with ID ${row.id} deleted.`);
+      console.log(`[deleteRow] Row with ID ${row.id} successfully deleted.`);
     } catch (error) {
-      console.error("Error deleting row:", error);
+      console.error("[deleteRow] Error deleting row:", error);
     }
+  } else {
+    console.log("[deleteRow] Deletion cancelled by user.");
   }
 }
