@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 import { getColumnDefs } from "./columnDef";
 import { IoIosAddCircleOutline } from "react-icons/io";
+import { update } from "../../api/api";
 
 // Register all modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -15,12 +16,35 @@ interface DataEditorProps {
 const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
   const columnDefs = getColumnDefs(tableName);
   const [rowData, setRowData] = useState(data);
+  const originalRowRef = useRef<Record<string, any> | null>(null);
 
-  const onCellValueChanged = (event: any) => {
+  const onCellEditingStarted = (event: any) => {
+    originalRowRef.current = { ...event.data };
+  };
+
+  const onCellValueChanged = async (event: any) => {
     const updatedRow = event.data;
-    setRowData((prevData) =>
-      prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-    );
+    const oldRow = originalRowRef.current;
+
+    if (!oldRow) return;
+
+    const hasChanged = Object.keys(updatedRow).some((key) => {
+      return updatedRow[key] !== oldRow[key];
+    });
+
+    if (hasChanged) {
+      try {
+        await update(updatedRow, tableName);
+        setRowData((prevData) =>
+          prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+        );
+      } catch (error) {
+        console.error("Failed to update row:", error);
+      }
+    }
+
+    // reset the cache
+    originalRowRef.current = null;
   };
 
   const addRow = () => {
@@ -48,6 +72,7 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
           rowData={rowData}
           columnDefs={columnDefs}
           defaultColDef={{ flex: 1, editable: true, resizable: true }}
+          onCellEditingStarted={onCellEditingStarted}
           onCellValueChanged={onCellValueChanged}
         />
       </div>
