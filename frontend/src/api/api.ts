@@ -85,34 +85,30 @@ export async function deleteRow(
 
   console.log("[deleteRow] Payload:", payload);
 
-  if (window.confirm(`Delete row with ID ${row.id}?`)) {
-    try {
-      const response = await fetch("/api/delete", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+  try {
+    const response = await fetch("/api/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-      console.log("[deleteRow] Response status:", response.status);
+    console.log("[deleteRow] Response status:", response.status);
 
-      if (!response.ok) {
-        throw new Error(`Delete failed: ${response.statusText}`);
-      }
-
-      // ✅ Remove the deleted row from UI
-      setRowData(prev => {
-        const updated = prev.filter(r => r.id !== row.id);
-        console.log("[deleteRow] Updated row data after deletion:", updated);
-        return updated;
-      });
-
-      console.log(`[deleteRow] Row with ID ${row.id} successfully deleted.`);
-    } catch (error) {
-      console.error("[deleteRow] Error deleting row:", error);
+    if (!response.ok) {
+      throw new Error(`Delete failed: ${response.statusText}`);
     }
-  } else {
-    console.log("[deleteRow] Deletion cancelled by user.");
+
+    // ✅ Remove the deleted row from UI
+    setRowData((prev) => {
+      const updated = prev.filter((r) => r.id !== row.id);
+      console.log("[deleteRow] Updated row data after deletion:", updated);
+      return updated;
+    });
+
+    console.log(`[deleteRow] Row with ID ${row.id} successfully deleted.`);
+  } catch (error) {
+    console.error("[deleteRow] Error deleting row:", error);
   }
 }

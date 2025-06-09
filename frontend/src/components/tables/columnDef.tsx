@@ -1,7 +1,26 @@
+import React, { useState } from "react";
 import { ColDef } from "ag-grid-community";
 import { FaTrash } from "react-icons/fa";
-import React from "react";
 import { deleteRow } from "../../api/api";
+import DeletePopup from "../windows/deletePopUp";
+
+const createdAtColumnDefinition: ColDef = {
+  headerName: "Date",
+  field: "created_at",
+  sortable: true,
+  filter: true,
+  hide: false,
+  minWidth: 80,
+  pinned: "left",
+  valueFormatter: (params) => {
+    const date = new Date(params.value);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  },
+};
 
 const deleteColumnDefinition: ColDef = {
   headerName: "",
@@ -9,9 +28,16 @@ const deleteColumnDefinition: ColDef = {
   cellRenderer: (params: any) => {
     const tableName = params.context.tableName;
     const setRowData = params.context.setRowData;
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+
+    const onConfirmDelete = async () => {
+      await deleteRow(params.data, tableName, setRowData);
+      setShowDeletePopup(false);
+    };
+
     return (
       <button
-        onClick={() => deleteRow(params.data, tableName, setRowData)}
+        onClick={() => setShowDeletePopup(true)}
         style={{ background: "none", border: "none", cursor: "pointer" }}
       >
         <FaTrash className="text-pink-500" />
@@ -24,6 +50,7 @@ const deleteColumnDefinition: ColDef = {
 
 // Column definitions for CalorieEntry
 export const calorieColumnDefs: ColDef[] = [
+  createdAtColumnDefinition,
   {
     field: "id",
     headerName: "ID",
@@ -32,14 +59,7 @@ export const calorieColumnDefs: ColDef[] = [
     width: 80,
     hide: true,
   },
-  {
-    field: "created_at",
-    headerName: "Created At",
-    sortable: true,
-    filter: true,
-    width: 150,
-    hide: true,
-  },
+
   {
     field: "carbs",
     headerName: "Carbs",
@@ -89,11 +109,12 @@ export const calorieColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
   },
-  deleteColumnDefinition
+  deleteColumnDefinition,
 ];
 
 // Column definitions for LiftEntry
 export const liftColumnDefs: ColDef[] = [
+  createdAtColumnDefinition,
   {
     field: "id",
     headerName: "ID",
@@ -102,14 +123,7 @@ export const liftColumnDefs: ColDef[] = [
     width: 80,
     hide: true,
   },
-  {
-    field: "created_at",
-    headerName: "Created At",
-    sortable: true,
-    filter: true,
-    width: 150,
-    hide: true,
-  },
+
   {
     field: "weight_lbs",
     headerName: "Weight (lbs)",
@@ -117,11 +131,12 @@ export const liftColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
   },
-  deleteColumnDefinition
+  deleteColumnDefinition,
 ];
 
 // Column definitions for WeightEntry
 export const weightColumnDefs: ColDef[] = [
+  createdAtColumnDefinition,
   {
     field: "id",
     headerName: "ID",
@@ -130,14 +145,7 @@ export const weightColumnDefs: ColDef[] = [
     width: 80,
     hide: true,
   },
-  {
-    field: "created_at",
-    headerName: "Created At",
-    sortable: true,
-    filter: true,
-    width: 150,
-    hide: true,
-  },
+
   {
     field: "weight_lbs",
     headerName: "Weight (lbs)",
@@ -145,7 +153,7 @@ export const weightColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
   },
-  deleteColumnDefinition
+  deleteColumnDefinition,
 ];
 
 export function getColumnDefs(tableName: string): ColDef[] {
