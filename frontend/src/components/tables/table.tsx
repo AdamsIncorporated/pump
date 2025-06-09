@@ -3,7 +3,8 @@ import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 import { getColumnDefs } from "./columnDef";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import { update } from "../../api/api";
+import { FaTrash } from "react-icons/fa";
+import { updateRow } from "../../api/api";
 
 // Register all modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -34,7 +35,7 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
 
     if (hasChanged) {
       try {
-        await update(updatedRow, tableName);
+        await updateRow(updatedRow, tableName);
         setRowData((prevData) =>
           prevData.map((row) => (row.id === updatedRow.id ? updatedRow : row))
         );
@@ -74,6 +75,7 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
           defaultColDef={{ flex: 1, editable: true, resizable: true }}
           onCellEditingStarted={onCellEditingStarted}
           onCellValueChanged={onCellValueChanged}
+          context={{ tableName: tableName, setRowData: setRowData }}
         />
       </div>
     </div>

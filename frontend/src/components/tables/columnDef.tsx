@@ -1,4 +1,7 @@
 import { ColDef } from "ag-grid-community";
+import { FaTrash } from "react-icons/fa";
+import React from "react";
+import { deleteRow } from "../../api/api";
 
 // Column definitions for CalorieEntry
 export const calorieColumnDefs: ColDef[] = [
@@ -16,7 +19,7 @@ export const calorieColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
     width: 150,
-    hide: true
+    hide: true,
   },
   {
     field: "carbs",
@@ -67,6 +70,24 @@ export const calorieColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
   },
+  {
+    headerName: "",
+    field: "delete",
+    cellRenderer: (params: any) => {
+      const tableName = params.context.tableName;
+      const setRowData = params.context.setRowData;
+      return (
+        <button
+          onClick={() => deleteRow(params.data, tableName, setRowData)}
+          style={{ background: "none", border: "none", cursor: "pointer" }}
+        >
+          <FaTrash className="text-pink-500" />
+        </button>
+      );
+    },
+    width: 50,
+    pinned: "right",
+  },
 ];
 
 // Column definitions for LiftEntry
@@ -85,7 +106,7 @@ export const liftColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
     width: 150,
-    hide: true
+    hide: true,
   },
   {
     field: "weight_lbs",
@@ -93,6 +114,24 @@ export const liftColumnDefs: ColDef[] = [
     type: "numericColumn",
     sortable: true,
     filter: true,
+  },
+  {
+    headerName: "",
+    field: "delete",
+    cellRenderer: (params: any) => {
+      const tableName = params.context.tableName;
+      const setRowData = params.context.setRowData;
+      return (
+        <button
+          onClick={() => deleteRow(params.data, tableName, setRowData)}
+          style={{ background: "none", border: "none", cursor: "pointer" }}
+        >
+          <FaTrash className="text-pink-500" />
+        </button>
+      );
+    },
+    width: 50,
+    pinned: "right",
   },
 ];
 
@@ -112,7 +151,7 @@ export const weightColumnDefs: ColDef[] = [
     sortable: true,
     filter: true,
     width: 150,
-    hide: true
+    hide: true,
   },
   {
     field: "weight_lbs",
@@ -120,6 +159,24 @@ export const weightColumnDefs: ColDef[] = [
     type: "numericColumn",
     sortable: true,
     filter: true,
+  },
+  {
+    headerName: "",
+    field: "delete",
+    cellRenderer: (params: any) => {
+      const tableName = params.context.tableName;
+      const setRowData = params.context.setRowData;
+      return (
+        <button
+          onClick={() => deleteRow(params.data, tableName, setRowData)}
+          style={{ background: "none", border: "none", cursor: "pointer" }}
+        >
+          <FaTrash className="text-pink-500" />
+        </button>
+      );
+    },
+    width: 50,
+    pinned: "right",
   },
 ];
 
