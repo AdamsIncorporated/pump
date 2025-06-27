@@ -29,9 +29,10 @@ impl Database {
     pub fn execute_sql(
         &mut self,
         sql: &str,
-        params: Vec<MySqlValue>,
+        params: Option<Vec<MySqlValue>>,
     ) -> Result<u64, Box<dyn std::error::Error>> {
-        let result = self.conn.exec_drop(sql, params)?;
+        let params_value = params.unwrap_or(Vec::new());
+        self.conn.exec_drop(sql, params_value)?;
         Ok(self.conn.affected_rows())
     }
 
@@ -40,7 +41,8 @@ impl Database {
         sql: &str,
         params: Option<Vec<MySqlValue>>,
     ) -> Result<Vec<SerdeValue>, Box<dyn std::error::Error>> {
-        let result: Vec<mysql::Row> = self.conn.exec(sql, params)?;
+        let params_value = params.unwrap_or(Vec::new());
+        let result: Vec<mysql::Row> = self.conn.exec(sql, params_value)?;
 
         let mut output = Vec::new();
 

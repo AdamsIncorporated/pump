@@ -36,13 +36,11 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
         "DELETE FROM {} WHERE ID IN ({})",
         table_name, id_placeholders
     );
-    let params: Vec<MySqlValue> = payload
-        .ids
-        .as_ref()
-        .unwrap_or(&vec![])
-        .iter()
-        .map(|&value| MySqlValue::UInt(value as u64))
-        .collect();
+    let params: Option<Vec<MySqlValue>> = payload.ids.as_ref().map(|ids| {
+        ids.iter()
+            .map(|&value| MySqlValue::UInt(value as u64))
+            .collect()
+    });
     let ids_str: Option<Vec<String>> = payload
         .ids
         .as_ref()

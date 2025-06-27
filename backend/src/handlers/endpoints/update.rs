@@ -61,9 +61,16 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
         let update_clause = update_clause_parts.join(", ");
         let sql = format!("UPDATE {} SET {} WHERE id = ?", table_name, update_clause);
 
-        if let Some(id_value) = id_value_opt {
-            params.push(id_value);
-        } else {
+        let params: Option<Vec<MySqlValue>> = match id_value_opt {
+            Some(id_value) => {
+                let mut p = params;
+                p.push(id_value);
+                Some(p)
+            }
+            None => None, // id missing, no params to run with
+        };
+
+        if params.is_none() {
             return HttpResponse::BadRequest().json("ID must be provided in the row.");
         }
 

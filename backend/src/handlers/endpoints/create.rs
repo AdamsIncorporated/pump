@@ -62,10 +62,11 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
             "INSERT INTO {} ({}) VALUES ({})",
             table_name, column_name_str, placeholders_str
         );
-        let params: Vec<MySqlValue> = insert_dict
-            .values()
-            .map(|value| MySqlValue::from(value.clone()))
-            .collect();
+        let params: Option<Vec<MySqlValue>> = Some(insert_dict).map(|dict| {
+            dict.values()
+                .map(|value| MySqlValue::from(value.clone()))
+                .collect()
+        });
 
         if let Err(err) = db.execute_sql(&sql, params) {
             error!("Insert failed: {}", err);
