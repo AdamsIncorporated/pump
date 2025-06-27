@@ -1,8 +1,6 @@
 use actix_web::middleware::Logger;
-use actix_web::{web, App, HttpServer};
-use std::sync::Mutex;
+use actix_web::{App, HttpServer};
 pub mod handlers;
-use handlers::endpoints::auth::auth::{AppState, User};
 use handlers::endpoints::create::create;
 use handlers::endpoints::delete::delete;
 use handlers::endpoints::read::read;
