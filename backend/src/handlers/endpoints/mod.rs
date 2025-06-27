@@ -3,3 +3,4 @@ pub mod read;
 pub mod update;
 pub mod delete;
 pub mod auth;
+pub mod utils;

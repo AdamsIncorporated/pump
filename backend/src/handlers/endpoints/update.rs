@@ -1,9 +1,10 @@
 use crate::db::Database;
+use crate::handlers::endpoints::utils::convert_to_mysql;
 use crate::handlers::payload::UpdatePayload;
 use actix_web::{put, web, HttpResponse, Responder};
 use log::error;
-use rusqlite::ToSql;
-use serde_json::{json, Value};
+use mysql::Value as MySqlValue;
+use serde_json::{json, Value as JsonValue};
 use std::collections::HashMap;
 
 #[put("/update")]
@@ -35,7 +36,7 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
     };
 
     // Check if data exists
-    let rows: &Vec<HashMap<String, Value>> = match &payload.rows {
+    let rows: &Vec<HashMap<String, JsonValue>> = match &payload.rows {
         Some(rows) => rows,
         None => {
             return HttpResponse::BadRequest().json("Payload must contain 'rows' key.");
@@ -43,20 +44,7 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
     };
 
     for row in rows {
-        let insert_dict: HashMap<String, String> = row
-            .iter()
-            .map(|(key, value)| {
-                let value_str = match value {
-                    Value::Array(arr) => format!("{:?}", arr),
-                    Value::Bool(b) => b.to_string(),
-                    Value::Number(n) => n.to_string(),
-                    Value::Null => "null".to_string(),
-                    Value::Object(obj) => format!("{:?}", obj),
-                    Value::String(s) => s.clone(),
-                };
-                (key.clone(), value_str)
-            })
-            .collect();
+        let insert_dict: HashMap<String, MySqlValue> = convert_to_mysql(row);
         let update_clause = insert_dict
             .keys()
             .filter(|key| *key != "id")
@@ -64,20 +52,18 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
             .collect::<Vec<String>>()
             .join(", ");
         let sql = format!("UPDATE {} SET {} WHERE id = ?", table_name, update_clause);
-        let mut values: Vec<&dyn ToSql> = insert_dict
-            .iter()
-            .filter(|(key, _)| *key != "id")
-            .map(|(_, value)| value as &dyn ToSql)
+        let mut params: Vec<MySqlValue> = insert_dict
+            .values()
+            .map(|value| MySqlValue::from(value.clone()))
             .collect();
 
         if let Some(id_value) = insert_dict.get("id") {
-            values.push(id_value as &dyn ToSql);
+            params.push(id_value.clone())
         } else {
-            return HttpResponse::InternalServerError()
-                .json("`id` was not supplied to json payload");
-        }
+            return HttpResponse::BadRequest().json("ID must be provided in the row.");
+        };
 
-        if let Err(err) = db.execute_sql(&sql, &values) {
+        if let Err(err) = db.execute_sql(&sql, params) {
             error!("Update failed: {}", err);
             return HttpResponse::InternalServerError().json(json!({
                 "error": "Update failed for row.",
