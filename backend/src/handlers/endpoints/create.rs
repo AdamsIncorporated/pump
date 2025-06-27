@@ -2,9 +2,9 @@ use crate::db::Database;
 use crate::handlers::payload::CreatePayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
+use mysql::Value as MySqlValue;
 use serde_json::Value;
 use std::collections::HashMap;
-use rusqlite::ToSql;
 
 #[post("/create")]
 pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
@@ -62,9 +62,12 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
             "INSERT INTO {} ({}) VALUES ({})",
             table_name, column_name_str, placeholders_str
         );
-        let values: Vec<&dyn ToSql> = insert_dict.values().map(|s| s as &dyn ToSql).collect();
+        let params: Vec<MySqlValue> = insert_dict
+            .values()
+            .map(|value| MySqlValue::from(value.clone()))
+            .collect();
 
-        if let Err(err) = db.execute_sql(&sql, &values) {
+        if let Err(err) = db.execute_sql(&sql, params) {
             error!("Insert failed: {}", err);
             return HttpResponse::InternalServerError().json("Failed to insert row.");
         }
