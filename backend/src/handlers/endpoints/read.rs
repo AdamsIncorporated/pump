@@ -21,7 +21,7 @@ pub async fn read(query: web::Query<ReadParams>) -> impl Responder {
 
     let sql = format!("SELECT * FROM {} ORDER BY Id DESC", table_name);
 
-    match db.read_all_as_json(&sql, &[]) {
+    match db.read_all_as_json(&sql, None) {
         Ok(json) => HttpResponse::Ok().json(json),
         Err(error) => {
             error!(

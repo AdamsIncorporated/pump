@@ -38,7 +38,7 @@ impl Database {
     pub fn read_all_as_json(
         &mut self,
         sql: &str,
-        params: Vec<MySqlValue>,
+        params: Option<Vec<MySqlValue>>,
     ) -> Result<Vec<SerdeValue>, Box<dyn std::error::Error>> {
         let result: Vec<mysql::Row> = self.conn.exec(sql, params)?;
 
