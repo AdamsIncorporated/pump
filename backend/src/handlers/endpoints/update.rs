@@ -45,23 +45,27 @@ pub async fn update(payload: web::Json<UpdatePayload>) -> impl Responder {
 
     for row in rows {
         let insert_dict: HashMap<String, MySqlValue> = convert_to_mysql(row);
-        let update_clause = insert_dict
-            .keys()
-            .filter(|key| *key != "id")
-            .map(|key| format!("{} = ?", key))
-            .collect::<Vec<String>>()
-            .join(", ");
-        let sql = format!("UPDATE {} SET {} WHERE id = ?", table_name, update_clause);
-        let mut params: Vec<MySqlValue> = insert_dict
-            .values()
-            .map(|value| MySqlValue::from(value.clone()))
-            .collect();
+        let mut params = Vec::with_capacity(insert_dict.len());
+        let mut update_clause_parts = Vec::with_capacity(insert_dict.len() - 1);
+        let mut id_value_opt = None;
 
-        if let Some(id_value) = insert_dict.get("id") {
-            params.push(id_value.clone())
+        for (key, value) in &insert_dict {
+            if key == "id" {
+                id_value_opt = Some(value.clone());
+            } else {
+                update_clause_parts.push(format!("{} = ?", key));
+                params.push(value.clone());
+            }
+        }
+
+        let update_clause = update_clause_parts.join(", ");
+        let sql = format!("UPDATE {} SET {} WHERE id = ?", table_name, update_clause);
+
+        if let Some(id_value) = id_value_opt {
+            params.push(id_value);
         } else {
             return HttpResponse::BadRequest().json("ID must be provided in the row.");
-        };
+        }
 
         if let Err(err) = db.execute_sql(&sql, params) {
             error!("Update failed: {}", err);
