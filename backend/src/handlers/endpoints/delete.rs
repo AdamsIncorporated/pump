@@ -20,7 +20,7 @@ pub async fn delete(payload: web::Json<DeletePayload>) -> impl Responder {
         Ok(db) => db,
         Err(error) => {
             error!(
-                "Failed to find the main.db file for the database!: {}",
+                "Failed to connect to database!: {}",
                 error
             );
             return HttpResponse::InternalServerError().json("Failed to find database.");

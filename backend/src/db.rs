@@ -1,6 +1,8 @@
+use dotenv::{dotenv, from_path};
 use log::error;
 use mysql::{prelude::*, Opts, OptsBuilder, Pool, PooledConn, Value as MySqlValue};
 use serde_json::{json, Map, Value as SerdeValue};
+use std::env;
 
 pub struct Database {
     conn: PooledConn,
@@ -8,11 +10,21 @@ pub struct Database {
 
 impl Database {
     pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
+        // Load the .env file from the root
+        dotenv::from_path("./.env").ok();
+
+        let hostname = env::var("HOSTNAME")?;
+        let username = env::var("USERNAME")?;
+        let password = env::var("PASSWORD")?;
+        let database = env::var("DATABASE")?;
+        let port: u16 = env::var("PORT")?.parse()?; 
+
         let opts = OptsBuilder::new()
-            .ip_or_hostname(Some("localhost"))
-            .user(Some("your_user"))
-            .pass(Some("your_password"))
-            .db_name(Some("your_database"));
+            .ip_or_hostname(Some(&hostname))
+            .user(Some(&username))
+            .pass(Some(&password))
+            .db_name(Some(&database))
+            .tcp_port(port);
 
         match Pool::new(Opts::from(opts)) {
             Ok(pool) => {
@@ -53,18 +65,19 @@ impl Database {
                 let val = row.as_ref(i).unwrap_or(&MySqlValue::NULL);
                 let json_val = match val {
                     MySqlValue::NULL => SerdeValue::Null,
-                    MySqlValue::Bytes(bytes) => {
-                        match std::str::from_utf8(bytes) {
-                            Ok(s) => json!(s),
-                            Err(_) => json!(bytes),
-                        }
-                    }
+                    MySqlValue::Bytes(bytes) => match std::str::from_utf8(bytes) {
+                        Ok(s) => json!(s),
+                        Err(_) => json!(bytes),
+                    },
                     MySqlValue::Int(i) => json!(*i),
                     MySqlValue::UInt(u) => json!(*u),
                     MySqlValue::Float(f) => json!(*f),
                     MySqlValue::Double(d) => json!(*d),
                     MySqlValue::Date(y, m, d, h, min, s, _) => {
-                        json!(format!("{:04}-{:02}-{:02} {:02}:{:02}:{:02}", y, m, d, h, min, s))
+                        json!(format!(
+                            "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+                            y, m, d, h, min, s
+                        ))
                     }
                     MySqlValue::Time(..) => json!("TIME"), // You can customize if needed
                 };

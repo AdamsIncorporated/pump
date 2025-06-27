@@ -14,7 +14,7 @@ pub async fn read(query: web::Query<ReadParams>) -> impl Responder {
     let mut db = match Database::new() {
         Ok(db) => db,
         Err(err) => {
-            error!("Failed to find the main.db file for the database!: {}", err);
+            error!("Failed to connect to database!: {}", err);
             return HttpResponse::InternalServerError().json("Failed to find database.");
         }
     };
