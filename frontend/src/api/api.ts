@@ -1,5 +1,41 @@
 import { UpdatePayload, DeletePayload } from "./payload";
 
+export async function createdRow(
+  row: Record<string, any> | null,
+  table_name: string
+) {
+  const url = "api/create";
+  console.log(`[create] Creating data from: ${url}`);
+
+  const payload: UpdatePayload = {
+    table_name,
+    rows: [row ?? {}],
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log(`[create] Response status: ${response.status}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("[create] Data received:", data);
+    return data;
+  } catch (error) {
+    console.error("[create] Failed to create data:", error);
+    throw error;
+  }
+}
+
 export async function read(tableName: string) {
   const url = `/api/read?table_name=${encodeURIComponent(tableName)}`;
   console.log(`[read] Fetching data from: ${url}`);

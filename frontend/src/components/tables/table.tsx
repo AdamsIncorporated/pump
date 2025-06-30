@@ -3,8 +3,7 @@ import { AgGridReact } from "ag-grid-react";
 import { ModuleRegistry, AllCommunityModule } from "ag-grid-community";
 import { getColumnDefs } from "./columnDef";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import { FaTrash } from "react-icons/fa";
-import { updateRow } from "../../api/api";
+import { updateRow, createdRow } from "../../api/api";
 
 // Register all modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -48,13 +47,15 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
     originalRowRef.current = null;
   };
 
-  const addRow = () => {
+  const addRow = async () => {
     const newRow: Record<string, any> = {};
     columnDefs.forEach((col: any) => {
-      newRow[col.field] = null;
+      newRow[col.field] =
+        col.field === "created_at" ? new Date().toISOString() : null;
     });
 
     setRowData((prev) => [...prev, newRow]);
+    await createdRow(newRow, tableName);
   };
 
   return (
