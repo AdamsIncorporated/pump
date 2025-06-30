@@ -6,6 +6,7 @@ use mysql::Value as MySqlValue;
 use serde_json::Value;
 use std::collections::HashMap;
 
+#[inline(never)]
 #[post("/create")]
 pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     // Check if table name is provided

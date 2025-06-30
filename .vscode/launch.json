@@ -8,7 +8,8 @@
       "program": "${workspaceFolder}/backend/target/debug/pump",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "cargo build"
+      "preLaunchTask": "cargo build",
+      "envFile": "${workspaceFolder}/backend/.env"
     }
   ]
 }
