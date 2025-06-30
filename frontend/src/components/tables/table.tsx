@@ -55,7 +55,12 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, tableName }) => {
     });
 
     setRowData((prev) => [...prev, newRow]);
-    await createdRow(newRow, tableName);
+
+    // Exclude meta field "delete" before sending
+    const filteredRow = Object.fromEntries(
+      Object.entries(newRow).filter(([key]) => !["id", "delete"].includes(key))
+    );
+    await createdRow(filteredRow, tableName);
   };
 
   return (
