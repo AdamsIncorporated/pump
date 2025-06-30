@@ -1,4 +1,3 @@
-use dotenv::{dotenv, from_path};
 use log::error;
 use mysql::{prelude::*, Opts, OptsBuilder, Pool, PooledConn, Value as MySqlValue};
 use serde_json::{json, Map, Value as SerdeValue};
@@ -13,11 +12,11 @@ impl Database {
         // Load the .env file from the root
         dotenv::from_path("./.env").ok();
 
-        let hostname = env::var("HOSTNAME")?;
-        let username = env::var("USERNAME")?;
-        let password = env::var("PASSWORD")?;
-        let database = env::var("DATABASE")?;
-        let port: u16 = env::var("PORT")?.parse()?; 
+        let hostname = env::var("DB_HOSTNAME")?;
+        let username = env::var("DB_USERNAME")?;
+        let password = env::var("DB_PASSWORD")?;
+        let database = env::var("DB_DATABASE")?;
+        let port: u16 = env::var("DB_PORT")?.parse()?; 
 
         let opts = OptsBuilder::new()
             .ip_or_hostname(Some(&hostname))
