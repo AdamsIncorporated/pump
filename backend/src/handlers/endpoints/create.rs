@@ -1,12 +1,10 @@
+use crate::handlers::endpoints::utils::convert_to_mysql;
 use crate::db::Database;
 use crate::handlers::payload::CreatePayload;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use mysql::Value as MySqlValue;
-use serde_json::Value;
-use std::collections::HashMap;
 
-#[inline(never)]
 #[post("/create")]
 pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     // Check if table name is provided
@@ -36,20 +34,7 @@ pub async fn create(payload: web::Json<CreatePayload>) -> impl Responder {
     };
 
     for row in rows {
-        let insert_dict: HashMap<String, String> = row
-            .iter()
-            .map(|(key, value)| {
-                let value_str = match value {
-                    Value::Array(arr) => format!("{:?}", arr),
-                    Value::Bool(b) => b.to_string(),
-                    Value::Number(n) => n.to_string(),
-                    Value::Null => "null".to_string(),
-                    Value::Object(obj) => format!("{:?}", obj),
-                    Value::String(s) => s.clone(),
-                };
-                (key.clone(), value_str)
-            })
-            .collect();
+        let insert_dict = convert_to_mysql(row);
         let column_name_str = insert_dict
             .keys()
             .cloned()

@@ -16,7 +16,7 @@ impl Database {
         let username = env::var("DB_USERNAME")?;
         let password = env::var("DB_PASSWORD")?;
         let database = env::var("DB_DATABASE")?;
-        let port: u16 = env::var("DB_PORT")?.parse()?; 
+        let port: u16 = env::var("DB_PORT")?.parse()?;
 
         let opts = OptsBuilder::new()
             .ip_or_hostname(Some(&hostname))
@@ -43,7 +43,15 @@ impl Database {
         params: Option<Vec<MySqlValue>>,
     ) -> Result<u64, Box<dyn std::error::Error>> {
         let params_value = params.unwrap_or(Vec::new());
-        self.conn.exec_drop(sql, params_value)?;
+        let res: Result<(), mysql::Error> = self.conn.exec_drop(sql, params_value.clone());
+        if let Err(e) = res {
+            error!(
+                "SQL execution error: {}\nSQL: {}\nParams: {:?}",
+                e, sql, params_value
+            );
+            return Err(Box::new(e));
+        }
+
         Ok(self.conn.affected_rows())
     }
 
